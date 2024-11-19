@@ -89,6 +89,8 @@ const Profile = () => {
 
             setAddresses((prev) => [...prev, { id: addressId, ...updatedAddressDetails }]);
             setDialogOpen(false);
+
+            
             setNewAddressName('');
         } catch (error) {
             console.error('Error saving address:', error);

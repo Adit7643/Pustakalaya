@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Fab, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Card, CardContent, Typography, IconButton } from '@mui/material';
+import {
+  Box, Fab, Dialog, DialogActions, MenuItem, DialogContent, Select, DialogTitle, TextField, Button, Card, CardContent, Typography, IconButton, InputLabel,
+  FormControl
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SellerNavigation from './SellerNavigation';
 import { initializeApp } from 'firebase/app';
-import { getDoc,deleteDoc, updateDoc, getDocs, getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import { getDoc, deleteDoc, updateDoc, getDocs, getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +28,18 @@ const Listing = () => {
     image: null,
   });
   const navigate = useNavigate();
+  const BOOK_CATEGORIES = [
+    "Literature & Fiction",
+    "Science & Technology",
+    "History & Geography",
+    "Computers & IT",
+    "Educational",
+    "Arts & Crafts",
+    "Sports",
+    "Children & Teen",
+    "Psychology & Self-Help",
+    "Law & Government"
+  ];
 
   useEffect(() => {
     const sellerEmail = localStorage.getItem("seller");
@@ -163,7 +178,12 @@ const Listing = () => {
       });
   };
 
-  const handleDelete = async (id) =>{
+
+  const handleLogout = () => {
+    localStorage.removeItem('seller_user');
+  };
+
+  const handleDelete = async (id) => {
     const sellerEmail = localStorage.getItem("seller");
     const bookRef = doc(db, "Books", id);
     await deleteDoc(bookRef);
@@ -176,26 +196,26 @@ const Listing = () => {
     await deleteDoc(listingDocRef);
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
   };
-  
+
   return (
     <>
-      <SellerNavigation />
+      <SellerNavigation handleLogout={handleLogout} />
       <div style={{ padding: '0 5rem', position: 'relative' }}>
         <h2>Books Listed</h2>
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           {books.map((book) => (
-            <Card key={book.id} style={{padding: '0', display: 'flex', flexDirection: 'row', position: 'relative',width:"25rem",height:"25rem" }}>
+            <Card key={book.id} style={{ padding: '0', display: 'flex', flexDirection: 'row', position: 'relative', width: "25rem", height: "25rem" }}>
               {/* Left Half - Image and Buttons */}
               <Box style={{ width: '50%', position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 {book.image && (
                   <img
                     src={book.image}
                     alt={book.name}
-                    style={{ width: '100%', height:'100%', objectFit: 'cover' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 )}
                 {/* Edit and Delete buttons below the image */}
-               
+
               </Box>
 
               {/* Right Half - Book Details */}
@@ -313,7 +333,25 @@ const Listing = () => {
                 }
               }}
             />
-
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Book Category</InputLabel>
+              <Select
+                name="category"
+                value={bookDetails.category}
+                label="Book Category"
+                onChange={handleChange}
+                sx={{
+                  borderRadius: '8px',
+                  fontSize: { xs: '14px', sm: '16px' }
+                }}
+              >
+                {BOOK_CATEGORIES.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               margin="dense"
               name="stock"

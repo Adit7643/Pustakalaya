@@ -13,7 +13,6 @@ import RecommendedSection from "./RecommendedSection";
 import Footer from "./Footer";
 import Profile from "./Profile";
 import Orders from "./Orders";
-import SellerNavigation from "./SellerNavigation";
 
 const App = () => {
   const isUserLoggedIn = true; // Set this based on actual auth status
@@ -43,9 +42,9 @@ const App = () => {
         <Route
           path="/buy"
           element={
-          <>
-            <D2CComponent />
-          </>}
+            <>
+              <D2CComponent />
+            </>}
         />
         <Route
           path="/cart"
@@ -68,7 +67,6 @@ const App = () => {
           path="/orders"
           element={
             <>
-              <SellerNavigation />
               <Orders />
             </>
           }

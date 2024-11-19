@@ -1,100 +1,256 @@
-import React, { useState } from 'react';
-import Slider from 'react-slick';
-import { Box, Typography, IconButton, Select, MenuItem } from '@mui/material';
-import BookCard from './BookCard';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import React, { useState } from "react";
+import Slider from "react-slick";
+import { Box, Typography, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 // Dummy data for books
 const allBooks = [
-  { title: "Cooking 101", description: "Learn to cook with simple recipes.", genre: "Cooking", image: "src/assets/book-1.jpg", buyLink: "#" },
-  { title: "The Art of French Cooking", description: "A classic cookbook with French recipes.", genre: "Cooking", image: "src/assets/book-2.jpg", buyLink: "#" },
-  { title: "Fantasy Adventures", description: "A journey through fantasy worlds.", genre: "Fiction", image: "src/assets/book-1.jpg", buyLink: "#" },
-  { title: "Mystery of the Lost Island", description: "An intriguing mystery novel.", genre: "Mystery", image: "src/assets/book-3.jpg", buyLink: "#" },
-  { title: "Healthy Eating", description: "A guide to healthy recipes.", genre: "Cooking", image: "src/assets/book-4.jpg", buyLink: "#" },
-  { title: "Space Odyssey", description: "Exploring the universe.", genre: "Science Fiction", image: "src/assets/book-5.jpg", buyLink: "#" },
-  // Add more book entries as needed...
+  { 
+    title: "The Great Gatsby", 
+    author: "F. Scott Fitzgerald", 
+    publication: "Scribner",
+    price: 12.99, 
+    image: "src/assets/book-1.jpg" 
+  },
+  { 
+    title: "To Kill a Mockingbird", 
+    author: "Harper Lee", 
+    publication: "J.B. Lippincott & Co.",
+    price: 14.99, 
+    image: "src/assets/book-2.jpg" 
+  },
+  { 
+    title: "1984", 
+    author: "George Orwell", 
+    publication: "Penguin Books",
+    price: 10.50, 
+    image: "src/assets/book-3.jpg" 
+  },
+  { 
+    title: "Pride and Prejudice", 
+    author: "Jane Austen", 
+    publication: "T. Egerton, Whitehall",
+    price: 9.99, 
+    image: "src/assets/book-4.jpg" 
+  },
+  { 
+    title: "The Catcher in the Rye", 
+    author: "J.D. Salinger", 
+    publication: "Little, Brown and Company",
+    price: 11.25, 
+    image: "src/assets/book-5.jpg" 
+  },
+  { 
+    title: "Brave New World", 
+    author: "Aldous Huxley", 
+    publication: "Chatto & Windus",
+    price: 13.75, 
+    image: "src/assets/book-6.jpg" 
+  },
+  { 
+    title: "The Hobbit", 
+    author: "J.R.R. Tolkien", 
+    publication: "George Allen & Unwin",
+    price: 15.50, 
+    image: "src/assets/book-7.jpg" 
+  },
+  { 
+    title: "Fahrenheit 451", 
+    author: "Ray Bradbury", 
+    publication: "Ballantine Books",
+    price: 10.99, 
+    image: "src/assets/book-8.jpg" 
+  },
+  { 
+    title: "The Alchemist", 
+    author: "Paulo Coelho", 
+    publication: "HarperOne",
+    price: 12.50, 
+    image: "src/assets/book-9.jpg" 
+  },
+  { 
+    title: "Animal Farm", 
+    author: "George Orwell", 
+    publication: "Secker and Warburg",
+    price: 8.99, 
+    image: "src/assets/book-10.jpg" 
+  },
+  { 
+    title: "The Da Vinci Code", 
+    author: "Dan Brown", 
+    publication: "Doubleday",
+    price: 14.25, 
+    image: "src/assets/book-11.jpg" 
+  },
+  { 
+    title: "Dune", 
+    author: "Frank Herbert", 
+    publication: "Chilton Books",
+    price: 16.99, 
+    image: "src/assets/book-2.jpg" 
+  },
+  { 
+    title: "The Martian", 
+    author: "Andy Weir", 
+    publication: "Crown Publishing Group",
+    price: 13.50, 
+    image: "src/assets/book-3.jpg" 
+  },
+  { 
+    title: "Sapiens: A Brief History of Humankind", 
+    author: "Yuval Noah Harari", 
+    publication: "Harper",
+    price: 17.99, 
+    image: "src/assets/book-4.jpg" 
+  },
+  { 
+    title: "The Girl with the Dragon Tattoo", 
+    author: "Stieg Larsson", 
+    publication: "Norstedts Förlag",
+    price: 12.75, 
+    image: "src/assets/book-5.jpg" 
+  }
 ];
 
 const MostSellingBooks = () => {
-  const [selectedGenre, setSelectedGenre] = useState('All');
-
-  // Filter books based on selected genre
-  const filteredBooks = selectedGenre === 'All' 
-    ? allBooks 
-    : allBooks.filter(book => book.genre === selectedGenre);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const settings = {
     dots: false,
-    infinite: filteredBooks.length > 4, // Allow infinite scrolling only if more than 5 books
-    speed: 500,
-    slidesToShow: filteredBooks.length < 4 ? filteredBooks.length : 4, // Adjust slides to show based on count
+    infinite: true,
+    speed: 800,
+    slidesToShow: isSmallScreen ? 1 : 3,
     slidesToScroll: 1,
-    autoplay: false,
-    arrows: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
     nextArrow: <ArrowButton direction="right" />,
     prevArrow: <ArrowButton direction="left" />,
+    beforeChange: (current, next) => setCurrentSlide(next),
+    cssEase: "ease-out",
   };
 
   return (
-    <Box sx={{ padding: '40px 20px', textAlign: 'center' }}>
-      <Typography variant="h4" gutterBottom>
+    <Box
+      sx={{
+        position: "relative",
+        padding: "40px 20px",
+        background: "linear-gradient(45deg, #f3e5f5, #e8eaf6)",
+        overflow: "hidden",
+      }}
+    >
+      {/* Section Title */}
+      <Typography
+        variant="h4"
+        sx={{
+          textAlign: "center",
+          mb: 5,
+          fontWeight: "bold",
+          color: "primary.main",
+        }}
+      >
         Most Selling Books
       </Typography>
-      <Select
-        value={selectedGenre}
-        onChange={(e) => setSelectedGenre(e.target.value)}
-        displayEmpty
-        sx={{ marginBottom: 2 }}
-      >
-        <MenuItem value="All">All</MenuItem>
-        <MenuItem value="Cooking">Cooking</MenuItem>
-        <MenuItem value="Fiction">Fiction</MenuItem>
-        <MenuItem value="Mystery">Mystery</MenuItem>
-        <MenuItem value="Science Fiction">Science Fiction</MenuItem>
-      </Select>
-      {filteredBooks.length > 0 && ( // Render slider only if there are filtered books
-        <Box sx={{ width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-          <Slider {...settings}>
-            {filteredBooks.map((book, index) => (
-              <BookCard 
-                key={index} 
-                title={book.title} 
-                description={book.description} 
-                image={book.image} 
-                buyLink={book.buyLink} 
-              />
-            ))}
-          </Slider>
-        </Box>
-      )}
-      {filteredBooks.length === 0 && ( // Optional: show a message when no books are available
-        <Typography variant="body1" color="text.secondary">
-          No books available for this genre.
-        </Typography>
-      )}
+
+      {/* Slider */}
+      <Box sx={{ maxWidth: "1400px", margin: "0 auto" }}>
+        <Slider {...settings}>
+          {allBooks.map((book, index) => (
+            <BookCard key={index} book={book} isActive={index === currentSlide} />
+          ))}
+        </Slider>
+      </Box>
     </Box>
   );
 };
 
-// Arrow button component
+// Book Card Component
+const BookCard = ({ book, isActive }) => {
+  return (
+    <Box
+      sx={{
+        padding: 2,
+        textAlign: "center",
+        transform: isActive ? "scale(1)" : "scale(0.9)",
+        opacity: isActive ? 1 : 0.8,
+        transition: "all 0.5s ease",
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: "#fff",
+          borderRadius: 4,
+          padding: 3,
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+          "&:hover": {
+            boxShadow: "0 6px 18px rgba(0, 0, 0, 0.2)",
+            transform: "scale(1.05)",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            height: { xs: "150px", sm: "200px" },
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            borderRadius: 2,
+            mb: 2,
+          }}
+        >
+          <img
+            src={book.image}
+            alt={book.title}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </Box>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            fontSize: { xs: "1rem", sm: "1.25rem" },
+            mb: 1,
+          }}
+        >
+          {book.title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          {book.author}
+        </Typography>
+        <Typography variant="subtitle1" color="primary">
+          ${book.price.toFixed(2)}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
+// Custom Arrow Button Component
 const ArrowButton = ({ direction, onClick }) => {
   return (
     <IconButton
       onClick={onClick}
       sx={{
-        background: 'transparent',
-        color: 'primary.main',
-        position: 'absolute',
-        top: '50%',
-        [direction === 'left' ? 'left' : 'right']: '10px',
-        transform: 'translateY(-50%)',
-        '&:hover': {
-          background: 'rgba(255, 255, 255, 0.5)',
+        position: "absolute",
+        top: "50%",
+        transform: "translateY(-50%)",
+        [direction === "left" ? "left" : "right"]: "20px",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        color: "#fff",
+        zIndex: 10,
+        "&:hover": {
+          backgroundColor: "rgba(0,0,0,0.7)",
         },
       }}
     >
-      {direction === 'left' ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+      {direction === "left" ? <ArrowBackIcon /> : <ArrowForwardIcon />}
     </IconButton>
   );
 };

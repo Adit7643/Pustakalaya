@@ -21,6 +21,7 @@ import {
   Divider,
   MenuItem,
   Chip,
+  useTheme
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SellerNavigation from './SellerNavigation';
@@ -30,8 +31,10 @@ import { Link } from 'react-router-dom';
 import MapComponent from './MapComponent';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from '../config';
-import { getFirestore,getDoc, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import Footer from './Footer';
+import SellerDetailsCard from './SellerDetailsCard';
 
 // Dummy data for earnings, orders, and transactions
 const totalEarningsTarget = 100000;
@@ -98,6 +101,7 @@ const SellerDashboard = () => {
     revenue: "",
     email: "",
     password: "",
+    category: "",
     sellerName: "",
     warehouseLocation: "",
     Gst_Number: "",
@@ -105,8 +109,8 @@ const SellerDashboard = () => {
   });
 
   const [monthlyEarnings, setMonthlyEarnings] = useState([]);
-  const [totalEarnings , settotalEarnings] = useState(0);
-  const [pendingOrders , setPendingOrders] = useState(0);
+  const [totalEarnings, settotalEarnings] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -189,15 +193,15 @@ const SellerDashboard = () => {
       console.log(user.email);
 
       await setDoc(
-        doc(db, "sellers", user.email), 
+        doc(db, "sellers", user.email),
         {
           name: user.displayName,
           email: user.email,
           password: `google_${user.email}`,
-        }, 
+        },
         { merge: true } // Correct syntax for the merge option
       );
-      
+
       localStorage.setItem('seller', user.email);
       console.log(localStorage.getItem('seller'));
       console.log("after Sign in");
@@ -281,78 +285,204 @@ const SellerDashboard = () => {
     <>
       {isLoggedIn ? (
         <div>
-        <SellerNavigation handleLogout={handleLogout} />
+          <SellerNavigation handleLogout={handleLogout} />
 
           <Box sx={{ paddingLeft: 10, paddingRight: 10, paddingTop: 4 }}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{display:"flex", alignItems:"center"}}>
               <Grid item lg={8} xs={12} md={4}>
-                <Box>
-                  <Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
-                    Monthly Earnings Overview
-                  </Typography>
-                  <MonthlyEarningsChart earningsData={monthlyEarnings} />
-                </Box>
+
+                <MonthlyEarningsChart
+                  earningsData={monthlyEarnings}
+                  sx={{
+                    width: '100%',
+                    maxWidth: '100%',
+                  }}
+                />
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6">Recent Transactions</Typography>
-                    <Box sx={{ mt: 2, maxHeight: 500, overflow: 'auto' }}>
-                      <List>
-                        {recentTransactions.map((transaction) => (
-                          <React.Fragment key={transaction.id}>
-                            <ListItem>
-                              <ListItemText primary={transaction.transaction} />
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                        ))}
-                      </List>
-                      <Typography variant="body2" sx={{ textAlign: 'center', mt: 2, cursor: 'pointer' }}>
-                        View All Transactions
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
+                <SellerDetailsCard />
               </Grid>
             </Grid>
 
             <Grid container spacing={3} sx={{ mt: 3 }}>
               <Grid item xs={12} md={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6">Total Earnings</Typography>
-                    <Typography variant="h4" color="primary">
-                      ₹{totalEarnings}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
-                      <CircularProgressWithLabel value={earningsProgress} size={80} />
+                <Card
+                  sx={{
+                    height: '100%',
+                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+                    borderRadius: 3,
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                        Total Earnings
+                      </Typography>
+                      <Chip
+                        label={`Target: ₹${totalEarningsTarget.toLocaleString()}`}
+                        color="success"
+                        size="small"
+                        sx={{ fontWeight: 'bold' }}
+                      />
                     </Box>
-                    <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
-                      Progress: {earningsProgress.toFixed(2)}% of ₹{totalEarningsTarget}
+
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: 180,
+                        height: 180,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        mb: 2
+                      }}
+                    >
+                      <CircularProgress
+                        variant="determinate"
+                        value={earningsProgress}
+                        size={180}
+                        thickness={6}
+                        sx={{
+                          color: 'primary.light',
+                          position: 'absolute',
+                          zIndex: 1,
+                        }}
+                      />
+                      <CircularProgress
+                        variant="determinate"
+                        value={100}
+                        size={170}
+                        thickness={4}
+                        sx={{
+                          color: 'grey.300',
+                          position: 'absolute',
+                          zIndex: 0,
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          zIndex: 2,
+                        }}
+                      >
+                        <Typography
+                          variant="h4"
+                          color="primary"
+                          sx={{ fontWeight: 'bold' }}
+                        >
+                          ₹{totalEarnings.toLocaleString()}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {`${Math.round(earningsProgress)}% of Target`}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        textAlign: 'center',
+                        maxWidth: 250,
+                        opacity: 0.7
+                      }}
+                    >
+                      Your total earnings this year, tracking towards the annual target
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <Card sx={{ height: '100%' }}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+                    borderRadius: 3,
+                    padding: '16px',
+                  }}
+                >
                   <CardContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch',justifyItems:"stretch", justifyContent: 'center', height: '100%' }}>
-                      <ShoppingCartIcon sx={{ fontSize: 60, color: 'primary.main' }} />
-                      <Typography variant="h6" sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                         Pending Orders
                       </Typography>
-                      <Typography variant="h4" color="error" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                      <Chip
+                        label={`Total: ${pendingOrders}`}
+                        color="warning"
+                        size="small"
+                        sx={{ fontWeight: 'bold' }}
+                      />
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%'
+                      }}
+                    >
+                      <ShoppingCartIcon
+                        sx={{
+                          fontSize: 80,
+                          color: 'primary.main',
+                          mb: 2
+                        }}
+                      />
+                      <Typography
+                        variant="h4"
+                        color="error"
+                        sx={{
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          mb: 2
+                        }}
+                      >
                         {pendingOrders}
                       </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          textAlign: 'center',
+                          mb: 2
+                        }}
+                      >
+                        Orders Waiting to be Processed
+                      </Typography>
+                      <Link to="/orders">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          sx={{
+                            textTransform: 'none',
+                            borderRadius: 2
+                          }}
+                        >
+                          View Pending Orders
+                        </Button>
+                      </Link>
                     </Box>
                   </CardContent>
                 </Card>
               </Grid>
               <Grid item xs={12} md={4}>
-              <RecentOrdersCard sellerEmail={localStorage.getItem('seller')} />
+                <RecentOrdersCard sellerEmail={localStorage.getItem('seller')} />
               </Grid>
             </Grid>
 
@@ -451,6 +581,7 @@ const SellerDashboard = () => {
           </DialogActions>
         </Dialog>
       )}
+      <Footer />
     </>
   );
 };
