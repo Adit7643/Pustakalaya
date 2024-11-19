@@ -98,7 +98,7 @@ const Navbar = () => {
         email: user.email,
         password: `google_${user.email}`,
       });
-      localStorage.setItem('user',user.email);
+      localStorage.setItem('user', user.email);
       setIsLoggedIn(true);
       handleDialogClose();
     } catch (error) {
@@ -116,7 +116,7 @@ const Navbar = () => {
       email: Email,
       password: Password,
     });
-    localStorage.setItem('user',Email);
+    localStorage.setItem('user', Email);
     setIsLoggedIn(true);
     handleDialogClose();
   };
@@ -322,12 +322,18 @@ const Navbar = () => {
             <ListItemText primary="My Orders" />
           </MenuItem>,
 
-          <MenuItem onClick={() => { /* Handle My Profile */ }} key="my-profile">
+          <MenuItem
+            component={Link}
+            to="/profile"
+            onClick={() => { /* Handle My Profile */ }}
+            key="my-profile"
+          >
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="My Profile" />
-          </MenuItem>,
+          </MenuItem>
+          ,
 
           <MenuItem onClick={() => { /* Handle Saved Addresses */ }} key="saved-addresses">
             <ListItemIcon>

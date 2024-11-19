@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { initializeApp } from 'firebase/app';
-import { increment, getFirestore, collection, getDocs,getDoc, doc, updateDoc } from 'firebase/firestore';
+import { increment, getFirestore, collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
+import { useNavigate } from 'react-router-dom';
+import { center } from '@cloudinary/url-gen/qualifiers/textAlignment';
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
@@ -10,6 +27,9 @@ const db = getFirestore(firebaseApp);
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sellerEmail = localStorage.getItem('seller');
@@ -23,12 +43,12 @@ const Orders = () => {
           const data = doc.data();
           return {
             id: doc.id,
-            orderItems: data.orderItems || [], // Array of ordered items
+            orderItems: data.orderItems || [],
             paymentId: data.paymentId,
             totalAmount: data.totalAmount,
             userEmail: data.userEmail,
             date: data.date,
-            orderStatus: data.orderStatus || 'Pending', // Default to 'Pending' if not present
+            orderStatus: data.orderStatus || 'Pending',
           };
         });
 
@@ -46,16 +66,6 @@ const Orders = () => {
   const markAsDelivered = async (orderId) => {
     const sellerEmail = localStorage.getItem('seller');
     const orderDocRef = doc(db, 'sellers', sellerEmail, 'orders', orderId);
-    const sellerDocSnap = await getDoc(orderDocRef);
-    let monthlyEarnings = sellerDocSnap.data().monthly_earnings || Array(12).fill(0);
-    orders.forEach((order) => {
-      const orderDate = new Date(order.date); // Assuming order.date is a valid date string
-      const monthIndex = orderDate.getMonth(); // Get the month index (0 for Jan, 1 for Feb, etc.)
-      monthlyEarnings[monthIndex] += order.totalAmount; // Add the amount to the corresponding month
-    });
-    const sellerDocRef = doc(db,'sellers',sellerEmail);
-    await updateDoc(sellerDocRef, { monthly_earnings: monthlyEarnings },{ merge:true });
-    console.log(orders);
 
     try {
       await updateDoc(orderDocRef, { orderStatus: 'Delivered' });
@@ -65,13 +75,25 @@ const Orders = () => {
         )
       );
       console.log('Order marked as delivered!');
-      const sellerDocRef = doc(db,'sellers',sellerEmail);
-      await updateDoc(sellerDocRef, {
-        pending: increment(-1)
-      }, { merge: true });
+      const sellerDocRef = doc(db, 'sellers', sellerEmail);
+      await updateDoc(sellerDocRef, { pending: increment(-1) });
     } catch (error) {
       console.error('Error updating order status:', error);
     }
+  };
+
+  const handleOpenDialog = (order) => {
+    setSelectedOrder(order);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const handleBack = () => {
+    navigate('/sell');
   };
 
   if (loading) {
@@ -91,66 +113,137 @@ const Orders = () => {
   }
 
   return (
-    <Box sx={{ padding: '20px' }}>
-      <Typography variant="h4" gutterBottom>
-        Orders
-      </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+    <Box sx={{ padding: '', maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
+      {/* Back Arrow and Cover Image */}
+      <IconButton
+        onClick={handleBack}
+        sx={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 10,
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          borderRadius: '50%',
+        }}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+      <Box
+        sx={{
+          backgroundImage: 'url(https://via.placeholder.com/1500x500)', // Replace with your actual cover image URL
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '200px',
+          marginBottom: '20px',
+          position: 'relative', // Ensure this container is positioned relative
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            position: 'absolute', // Absolutely position the title
+            left: '20px',         // Position it to the left
+            bottom: '20px',       // Position it at the bottom
+            color: 'white',       // Ensure the text is visible
+            fontWeight: 'bold',   // Add bold style for emphasis
+            // Adjust the font size for responsiveness
+            fontSize: {
+              xs: '1.5rem',  // For extra-small screens (mobile)
+              sm: '2rem',    // For small screens (tablet)
+              md: '2.5rem',  // For medium screens (laptop)
+            },
+            // Add some padding for the text to not touch the edges on smaller screens
+            padding: '0 10px',
+          }}
+        >
+          Orders
+        </Typography>
+      </Box>
+
+      <Box>
         {orders.map((order) => (
-          <Card
-            key={order.id}
-            sx={{
-              width: '300px',
-              padding: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Order ID: {order.id}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
+          <Accordion key={order.id} sx={{ marginBottom: '10px', boxShadow: '0px 4px 10px rgba(0,0,0,0.1)' }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              sx={{ backgroundColor: '#f5f5f5', padding: '10px' }}
+            >
+              <Typography variant="h6">Order ID: {order.id}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body1" gutterBottom>
                 Buyer: {order.userEmail}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Payment ID: {order.paymentId}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 Total Amount: ₹{order.totalAmount}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Date: {order.date}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
                 Status: <strong>{order.orderStatus}</strong>
               </Typography>
-              <Typography variant="body1" sx={{ marginTop: '10px' }}>
-                Items:
-              </Typography>
-              {order.orderItems.map((item, index) => (
-                <Box key={index} sx={{ marginBottom: '10px', paddingLeft: '10px' }}>
-                  <Typography variant="body2" color="textSecondary">
-                    - {item.name} by {item.author} (x{item.quantity})
-                  </Typography>
-                </Box>
-              ))}
-            </CardContent>
-            {order.orderStatus !== 'Delivered' && (
               <Button
-                variant="contained"
+                variant="outlined"
                 color="primary"
-                onClick={() => markAsDelivered(order.id)}
-                sx={{ alignSelf: 'center', marginTop: '10px' }}
+                onClick={() => handleOpenDialog(order)}
+                sx={{ marginTop: '10px' }}
               >
-                Mark as Delivered
+                View Details
               </Button>
-            )}
-          </Card>
+              {order.orderStatus !== 'Delivered' && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => markAsDelivered(order.id)}
+                  sx={{ marginTop: '10px', marginLeft: '10px' }}
+                >
+                  Mark as Delivered
+                </Button>
+              )}
+            </AccordionDetails>
+          </Accordion>
         ))}
       </Box>
+
+      {/* Order Details Dialog */}
+      {selectedOrder && (
+        <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+          <DialogTitle>Order Details</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" gutterBottom>
+              Order ID: {selectedOrder.id}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Buyer: {selectedOrder.userEmail}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Payment ID: {selectedOrder.paymentId}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Total Amount: ₹{selectedOrder.totalAmount}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Date: {selectedOrder.date}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Status: <strong>{selectedOrder.orderStatus}</strong>
+            </Typography>
+            <Typography variant="body1" sx={{ marginTop: '10px' }}>
+              Items:
+            </Typography>
+            {selectedOrder.orderItems.map((item, index) => (
+              <Box key={index} sx={{ marginBottom: '10px', paddingLeft: '10px' }}>
+                <Typography variant="body2" color="textSecondary">
+                  - {item.name} by {item.author} (x{item.quantity})
+                </Typography>
+              </Box>
+            ))}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 };
