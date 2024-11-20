@@ -31,6 +31,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { firebaseConfig } from '../config';
 import { doc, setDoc } from "firebase/firestore";
+import Logo from "./assets/Colorful.png"
 
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -146,7 +147,7 @@ const Navbar = () => {
           >
             <Box
               component="img"
-              src='https://res.cloudinary.com/diqksjvxp/image/upload/v1732092849/gnijxzswsbupttwyetho.png'
+              src={Logo}
               alt="Pustakalaya"
               sx={{
                 height: 40,
