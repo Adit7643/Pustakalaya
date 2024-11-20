@@ -23,19 +23,19 @@ const OfferCarousel = () => {
           title="Big Diwali Sale!"
           description="Get up to 50% off on your favorite books!"
           background="linear-gradient(45deg, #FE6B8B, #FF8E53)"
-          buttonLink="#shop"
+          buttonLink="/buy"
         />
         <CarouselSlide
           title="New Year, New Books!"
           description="Flat 30% off on all newly released books!"
           background="linear-gradient(45deg, #2196F3, #21CBF3)"
-          buttonLink="#shop"
+          buttonLink="/buy"
         />
         <CarouselSlide
           title="Christmas Special!"
           description="Buy 2 Get 1 Free on selected categories!"
           background="linear-gradient(45deg, #66BB6A, #43A047)"
-          buttonLink="#shop"
+          buttonLink="/buy"
         />
       </Slider>
     </Box>

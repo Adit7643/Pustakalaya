@@ -2,17 +2,23 @@ import React, { useRef, useEffect, useState } from 'react';
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import { Box, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const MapComponent = () => {
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
-  const [address, setAddress] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: markerIcon,
+      iconUrl: markerIcon,
+      shadowUrl: markerShadow,
+    });
     if (!mapInstance.current && mapContainer.current) {
       mapInstance.current = L.map(mapContainer.current).setView([31.2516164, 75.7039929], 13);
-      
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(mapInstance.current);
