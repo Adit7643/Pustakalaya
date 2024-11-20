@@ -25,6 +25,8 @@ import { getFirestore, doc, getDoc, setDoc, deleteDoc, getDocs, collection } fro
 import axios from 'axios';
 import MapComponent from './MapComponent';
 import { firebaseConfig } from '../config';
+import WishlistSection from './WishlistSection';
+import Footer from './Footer';
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
@@ -171,6 +173,7 @@ const Profile = () => {
     };
 
     return (
+        <>
         <Box
             sx={{
                 background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
@@ -401,6 +404,8 @@ const Profile = () => {
                         </Fade>
                     </Grid>
                 </Grid>
+                <WishlistSection />
+                
 
                 {/* Add Address Dialog */}
                 <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="md">
@@ -428,6 +433,8 @@ const Profile = () => {
                 </Dialog>
             </Box>
         </Box>
+        <Footer />
+        </>
     );
 };
 

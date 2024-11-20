@@ -13,6 +13,7 @@ import RecommendedSection from "./RecommendedSection";
 import Footer from "./Footer";
 import Profile from "./Profile";
 import Orders from "./Orders";
+import UserOrders from "./UserOrders";
 
 const App = () => {
   const isUserLoggedIn = true; // Set this based on actual auth status
@@ -68,6 +69,15 @@ const App = () => {
           element={
             <>
               <Orders />
+            </>
+          }
+        />
+        <Route
+          path="/user_order"
+          element={
+            <>
+              <Navbar />
+              <UserOrders/>
             </>
           }
         />

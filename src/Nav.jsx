@@ -372,7 +372,7 @@ const Navbar = () => {
           <Divider key="divider" />,
 
           // Menu Items
-          <MenuItem onClick={() => { /* Handle My Orders */ }} key="my-orders">
+          <MenuItem onClick={() => { /* Handle My Orders */ }} key="my-orders" component={Link}  to="/user_order">
             <ListItemIcon>
               <ShoppingCartIcon />
             </ListItemIcon>
@@ -392,14 +392,19 @@ const Navbar = () => {
           </MenuItem>
           ,
 
-          <MenuItem onClick={() => { /* Handle Saved Addresses */ }} key="saved-addresses">
+          <MenuItem
+            component={Link}
+            to="/profile"
+            onClick={() => { /* Handle My Profile */ }}
+            key="saved-addresses"
+          >
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Saved Addresses" />
           </MenuItem>,
 
-          <MenuItem onClick={() => { /* Handle Wish List */ }} key="wish-list">
+          <MenuItem onClick={() => { /* Handle Wish List */ }} key="wish-list" component={Link} to="/profile">
             <ListItemIcon>
               <FavoriteIcon />
             </ListItemIcon>

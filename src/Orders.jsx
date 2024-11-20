@@ -88,6 +88,10 @@ const Orders = () => {
     navigate('/sell');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('seller_user');
+  };
+
   const handleOpenDialog = (order) => {
     setSelectedOrder(order);
     setDialogOpen(true);
@@ -100,7 +104,7 @@ const Orders = () => {
 
   return (
     <>
-      <SellerNavigation />
+      <SellerNavigation handleLogout={handleLogout}/>
       <Box
         sx={{
           maxWidth: '1400px',
