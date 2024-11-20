@@ -9,23 +9,27 @@ import {
     Card,
     CardContent,
     CardActions,
-    List,
-    ListItem,
-    Divider,
-    Checkbox,
-    FormControlLabel,
     ButtonGroup,
     Slider,
     CardMedia,
     IconButton
 } from '@mui/material';
 import Navbar from './Nav';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SortIcon from '@mui/icons-material/Sort';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CategoryIcon from '@mui/icons-material/Category';
+import ClearIcon from '@mui/icons-material/Clear';
+import { 
+    Chip, 
+} from '@mui/material';
 import { initializeApp } from 'firebase/app';
 import { getDocs, getDoc, getFirestore, collection } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { styled } from '@mui/material/styles';
+import Footer from './Footer';
 
 // Styled Wishlist Icon with Animation
 const AnimatedWishlistIcon = styled(IconButton)(({ theme, isfavorite }) => ({
@@ -222,6 +226,7 @@ const D2CComponent = () => {
     });
 
     return (
+        <>
         <Box
             sx={{
                 display: 'flex',
@@ -243,75 +248,214 @@ const D2CComponent = () => {
             >
                 <Box
                     sx={{
-                        borderRight: '1px solid #ccc',
-                        padding: 2,
-                        width: '200px',
-                        backgroundColor: '#f9f9f9',
-                        boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+                        borderRight: '1px solid #e0e0e0',
+                        padding: 3,
+                        maxWidth:300,
+                        backgroundColor: '#f7f9fc',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                         height: 'calc(100vh - 64px)',
                         overflowY: 'auto',
-                        position: 'fixed',
+                        borderRadius: '0 10px 10px 0',
                         '&::-webkit-scrollbar': {
-                            display: 'none',
+                            width: '8px',
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            background: '#f1f1f1',
+                            borderRadius: '10px',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            background: '#888',
+                            borderRadius: '10px',
                         },
                     }}
                 >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        Filter & Sort
-                    </Typography>
-                    <Divider sx={{ margin: '16px 0' }} />
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: 3,
+                        backgroundColor: '#e6f2ff',
+                        padding: 2,
+                        borderRadius: 2,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}>
+                        <FilterListIcon sx={{ mr: 2, color: 'primary.main' }} />
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 'bold',
+                                color: 'primary.main',
+                                textTransform: 'uppercase',
+                                letterSpacing: 1
+                            }}
+                        >
+                            Filters
+                        </Typography>
+                    </Box>
 
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                        Sort By:
-                    </Typography>
-                    <select
-                        onChange={handleSortChange}
-                        value={sortOption}
-                        style={{ marginBottom: '16px', padding: '4px' }}
-                    >
-                        <option value="default">Default</option>
-                        <option value="price">Price</option>
-                    </select>
+                    {/* Sort Section */}
+                    <Box sx={{ marginBottom: 3 }}>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                fontWeight: 'bold',
+                                mb: 2,
+                                color: 'text.secondary',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <SortIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            Sort By
+                        </Typography>
 
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', marginTop: 2 }}>
-                        Price Range:
-                    </Typography>
-                    <Slider
-                        value={priceRange}
-                        onChange={handlePriceChange}
-                        valueLabelDisplay="auto"
-                        min={0}
-                        max={10000}
-                        sx={{ marginBottom: 2 }}
-                    />
+                        <ButtonGroup
+                            variant="outlined"
+                            fullWidth
+                            sx={{
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                borderRadius: 2
+                            }}
+                        >
+                            <Button
+                                variant={sortOption === 'default' ? 'contained' : 'outlined'}
+                                onClick={() => setSortOption('default')}
+                                sx={{ flexGrow: 1 }}
+                            >
+                                Default
+                            </Button>
+                            <Button
+                                variant={sortOption === 'price' ? 'contained' : 'outlined'}
+                                onClick={() => setSortOption('price')}
+                                sx={{ flexGrow: 1 }}
+                            >
+                                Price
+                            </Button>
+                        </ButtonGroup>
+                    </Box>
 
-                    <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold' }}>
-                        Genres:
-                    </Typography>
-                    <List>
-                        {['Literature & Fiction', 'Science & Technology', 'History & Geography', 'Computers & IT', 'Educational', 'Arts & Crafts', 'Sports', 'Children & Teen', 'Psychology & Self-Help', 'Law & Government'].map(
-                            (category) => (
-                                <ListItem key={category} sx={{ padding: '4px 0' }}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={selectedCategories.includes(category)}
-                                                onChange={() => handleCategoryChange(category)}
-                                            />
+                    {/* Price Range Section */}
+                    <Box sx={{ marginBottom: 3 }}>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                fontWeight: 'bold',
+                                mb: 2,
+                                color: 'text.secondary',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <AttachMoneyIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            Price Range
+                        </Typography>
+
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 2
+                        }}>
+                            <Typography variant="body2" sx={{ mr: 2 }}>
+                                ₹{priceRange[0]}
+                            </Typography>
+                            <Slider
+                                value={priceRange}
+                                onChange={handlePriceChange}
+                                valueLabelDisplay="auto"
+                                min={0}
+                                max={10000}
+                                sx={{
+                                    color: 'primary.main',
+                                    '& .MuiSlider-thumb': {
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                    }
+                                }}
+                            />
+                            <Typography variant="body2" sx={{ ml: 2 }}>
+                                ₹{priceRange[1]}
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    {/* Genres Section */}
+                    <Box>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                fontWeight: 'bold',
+                                mb: 2,
+                                color: 'text.secondary',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            Genres
+                        </Typography>
+
+                        <Box sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 1
+                        }}>
+                            {[
+                                'Literature & Fiction',
+                                'Science & Technology',
+                                'History & Geography',
+                                'Computers & IT',
+                                'Educational',
+                                'Arts & Crafts',
+                                'Sports',
+                                'Children & Teen',
+                                'Psychology & Self-Help',
+                                'Law & Government'
+                            ].map((category) => (
+                                <Chip
+                                    key={category}
+                                    label={category}
+                                    onClick={() => handleCategoryChange(category)}
+                                    color={selectedCategories.includes(category) ? 'primary' : 'default'}
+                                    variant={selectedCategories.includes(category) ? 'filled' : 'outlined'}
+                                    sx={{
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            transform: 'scale(1.05)',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                         }
-                                        label={category}
-                                    />
-                                </ListItem>
-                            )
-                        )}
-                    </List>
-                </Box>
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
 
+                    {/* Reset Filters Button */}
+                    <Box sx={{ mt: 3, textAlign: 'center' }}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<ClearIcon />}
+                            onClick={() => {
+                                setSelectedCategories([]);
+                                setPriceRange([0, 10000]);
+                                setSortOption('default');
+                            }}
+                            sx={{
+                                width: '100%',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+                                }
+                            }}
+                        >
+                            Reset Filters
+                        </Button>
+                    </Box>
+                </Box>
                 <Box
                     sx={{
                         flexGrow: 1,
                         padding: 2,
-                        marginLeft: '240px',
                         overflowY: 'auto',
                         height: 'calc(100vh - 64px)',
                         borderLeft: '1px solid #ccc',
@@ -390,7 +534,7 @@ const D2CComponent = () => {
                                         sx={{
                                             position: 'absolute',
                                             top: 10,
-                                            right:12,
+                                            right: 12,
                                             background: 'rgba(255,255,255,0.7)',
                                             borderRadius: '50%',
                                         }}
@@ -477,8 +621,10 @@ const D2CComponent = () => {
                         ))
                     )}
                 </Box>
-            </Box>
+            </Box> 
         </Box>
+        <Footer />
+        </>
     );
 };
 

@@ -38,12 +38,6 @@ import SellerDetailsCard from './SellerDetailsCard';
 import Google from "./assets/google-icon.jpg";
 // Dummy data for earnings, orders, and transactions
 const totalEarningsTarget = 100000;
-const recentTransactions = [
-  { id: 1, transaction: "Sold 'Cooking 101' for ₹500" },
-  // ... more transactions
-];
-
-// Example data for monthly earnings chart
 
 // Categories for genre selection
 const genres = [
@@ -64,29 +58,6 @@ const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 // Custom Circular Progress with center label
-const CircularProgressWithLabel = (props) => {
-  return (
-    <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Typography variant="caption" component="div" color="textSecondary">
-          {`${Math.round(props.value)}%`}
-        </Typography>
-      </Box>
-    </Box>
-  );
-};
-
-
 
 
 const SellerDashboard = () => {
@@ -238,27 +209,57 @@ const SellerDashboard = () => {
   };
 
   const handleSignUp = async () => {
-    const { email, password } = formData; // Extract email and password from formData
+    const { email, password } = formData;
     try {
+      // Validate input fields
+      if (!email || !password) {
+        alert("Please fill in all required fields");
+        return;
+      }
+  
+      // Additional form validation
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long");
+        return;
+      }
+  
       // Create user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User signed up:", userCredential.user);
-
+      const user = userCredential.user;
+  
       // Reference to Firestore document and set seller data
       const docRef = doc(db, "sellers", email);
       await setDoc(docRef, {
         ...formData,
         genres: selectedGenres,
-      });
-
-      // Save email to session storage and update state
+        createdAt: new Date(),
+        userId: user.uid
+      }, { merge: true });
+  
+      // Save email to local storage and update state
       localStorage.setItem('seller', email);
       localStorage.setItem('seller_user', JSON.stringify(user));
+      
       setIsLoggedIn(true);
       setOpenLoginDialog(false);
+      
       console.log("Seller added successfully!");
     } catch (error) {
-      console.error("Error adding seller:", error);
+      // Comprehensive error handling
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          alert("Email is already registered. Please use a different email or try logging in.");
+          break;
+        case 'auth/invalid-email':
+          alert("Invalid email address. Please check and try again.");
+          break;
+        case 'auth/weak-password':
+          alert("Password is too weak. Please choose a stronger password.");
+          break;
+        default:
+          console.error("Signup Error:", error);
+          alert("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
