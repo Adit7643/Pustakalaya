@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Fab, Dialog, DialogActions, MenuItem, DialogContent, Select, DialogTitle, TextField, Button, Card, CardContent, Typography, IconButton, InputLabel,
-  FormControl
+  Box, Fab, Dialog, DialogActions, MenuItem, DialogContent, Select,
+  DialogTitle, TextField, Button, Card, CardContent, Typography,
+  IconButton, InputLabel, FormControl
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SellerNavigation from './SellerNavigation';
 import { initializeApp } from 'firebase/app';
-import { getDoc, deleteDoc, updateDoc, getDocs, getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import {
+  getDoc, deleteDoc, updateDoc, getDocs,
+  getFirestore, collection, doc, setDoc
+} from 'firebase/firestore';
 import { firebaseConfig } from '../config';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,21 +31,17 @@ const Listing = () => {
     isbn: '',
     price: '',
     image: null,
+    category: '',
+    discount: ''
   });
   const navigate = useNavigate();
   const BOOK_CATEGORIES = [
-    "Literature & Fiction",
-    "Science & Technology",
-    "History & Geography",
-    "Computers & IT",
-    "Educational",
-    "Arts & Crafts",
-    "Sports",
-    "Children & Teen",
-    "Psychology & Self-Help",
-    "Law & Government"
+    "Literature & Fiction", "Science & Technology", "History & Geography",
+    "Computers & IT", "Educational", "Arts & Crafts", "Sports",
+    "Children & Teen", "Psychology & Self-Help", "Law & Government"
   ];
 
+  // Existing methods remain the same
   useEffect(() => {
     const sellerEmail = localStorage.getItem("seller");
 
@@ -197,268 +198,403 @@ const Listing = () => {
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
   };
 
+
+
+  const handleBack = () => {
+    navigate('/sell');
+  };
+
   return (
     <>
       <SellerNavigation handleLogout={handleLogout} />
-      <div style={{ padding: '0 5rem', position: 'relative' }}>
-        <h2>Books Listed</h2>
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-          {books.map((book) => (
-            <Card key={book.id} style={{ padding: '0', display: 'flex', flexDirection: 'row', position: 'relative', width: "25rem", height: "25rem" }}>
-              {/* Left Half - Image and Buttons */}
-              <Box style={{ width: '50%', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                {book.image && (
-                  <img
-                    src={book.image}
-                    alt={book.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                )}
-                {/* Edit and Delete buttons below the image */}
-
-              </Box>
-
-              {/* Right Half - Book Details */}
-              <Box style={{ width: '50%', padding: '10px' }}>
-                <Typography variant="h6">{book.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Author: {book.author}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Publisher: {book.publisher}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Stock: {book.stock}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  ISBN: {book.isbn}
-                </Typography>
-                <Typography variant="body2">Price: ₹{book.price}</Typography>
-                <Box style={{ marginTop: '10px', display: 'flex', justifyContent: 'left' }}>
-                  <IconButton onClick={() => handleEditPrice(book.id)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(book.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Card>
-
-          ))}
-        </div>
-
-
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={handleOpen}
-          style={{ position: 'fixed', bottom: '20px', right: '20px' }}
-        >
-          <AddIcon />
-        </Fab>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
+      <Box
+        sx={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          position: 'relative'
+        }}
+      >
+        {/* Background Image Section */}
+        <Box
           sx={{
-            '& .MuiDialog-paper': {
-              padding: { xs: '15px', sm: '20px' },
-              borderRadius: '10px',
-              width: { xs: '90vw', sm: '400px' },
-              maxWidth: '90vw',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '300px',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(src/assets/listings.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'blur(2px) brightness(0.5)', // Slight blur and darkening
+              transform: 'scale(1.1)',
+              zIndex: -1,
             },
+            zIndex: 0,
+          }}
+        />
+
+        {/* Content Container */}
+        <Box
+          sx={{
+            padding: { xs: '10px', sm: '20px' },
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          <DialogTitle
+          {/* Back Button */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: { xs: '10px', sm: '20px' },
+              left: { xs: '10px', sm: '20px' },
+              zIndex: 10
+            }}
+          >
+            <IconButton
+              onClick={handleBack}
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                },
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                borderRadius: '50%',
+                padding: '10px',
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+          </Box>
+
+          {/* Page Title */}
+          <Typography
+            variant="h4"
             sx={{
               textAlign: 'center',
-              fontWeight: 'bold',
-              color: 'primary.main',
-              fontSize: { xs: '18px', sm: '20px' }
+              marginTop: '150px',
+              marginBottom: '30px',
+              fontWeight: 700,
+              color: 'white',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
             }}
           >
-            Add a New Book
-          </DialogTitle>
-          <DialogContent
+            Your Listings
+          </Typography>
+
+          {/* Books Grid */}
+          <Box sx={{
+            display: 'flex',
+            gap: '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
+            {books.map((book) => (
+              <Card
+                key={book.id}
+                sx={{
+                  padding: '0',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  position: 'relative',
+                  width: "25rem",
+                  height: "25rem",
+                  boxShadow: 3,
+                  backgroundColor: 'white'
+                }}
+              >
+                {/* Left Half - Image */}
+                <Box sx={{ width: '50%', position: 'relative' }}>
+                  {book.image && (
+                    <img
+                      src={book.image}
+                      alt={book.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {/* Right Half - Book Details */}
+                <Box sx={{
+                  width: '50%',
+                  padding: '10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}>
+                  <Box>
+                    <Typography variant="h6">{book.name}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Author: {book.author}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Publisher: {book.publisher}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Stock: {book.stock}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      ISBN: {book.isbn}
+                    </Typography>
+                    <Typography variant="body1" color="primary" sx={{ fontWeight: 'bold' }}>
+                      Price: ₹{book.price}
+                    </Typography>
+                    {book.discount && (
+                      <Typography variant="body2" color="error">
+                        Discount: {book.discount}%
+                      </Typography>
+                    )}
+                  </Box>
+
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'left',
+                    mt: 2
+                  }}>
+                    <IconButton
+                      onClick={() => handleEditPrice(book.id)}
+                      color="primary"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(book.id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              </Card>
+            ))}
+          </Box>
+          {/* Floating Add Button */}
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={handleOpen}
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: { xs: '10px', sm: '15px' },
+              position: 'fixed',
+              bottom: '20px',
+              right: '20px',
+              zIndex: 10
             }}
           >
-            <TextField
-              autoFocus
-              margin="dense"
-              name="name"
-              label="Book Name"
-              type="text"
-              fullWidth
-              value={bookDetails.name}
-              onChange={handleChange}
+            <AddIcon />
+          </Fab>
+
+          {/* Add Book Dialog */}
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            sx={{
+              '& .MuiDialog-paper': {
+                padding: { xs: '15px', sm: '20px' },
+                borderRadius: '10px',
+                width: { xs: '90vw', sm: '400px' },
+                maxWidth: '90vw',
+              },
+            }}
+          >
+            <DialogTitle
               sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
-                  fontSize: { xs: '14px', sm: '16px' }
-                }
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: 'primary.main',
+                fontSize: { xs: '18px', sm: '20px' }
               }}
-            />
-            <TextField
-              margin="dense"
-              name="author"
-              label="Author"
-              type="text"
-              fullWidth
-              value={bookDetails.author}
-              onChange={handleChange}
+            >
+              Add a New Book
+            </DialogTitle>
+            <DialogContent
               sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
-                  fontSize: { xs: '14px', sm: '16px' }
-                }
+                display: 'flex',
+                flexDirection: 'column',
+                gap: { xs: '10px', sm: '15px' },
               }}
-            />
-            <TextField
-              margin="dense"
-              name="publisher"
-              label="Publisher"
-              type="text"
-              fullWidth
-              value={bookDetails.publisher}
-              onChange={handleChange}
-              sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
-                  fontSize: { xs: '14px', sm: '16px' }
-                }
-              }}
-            />
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Book Category</InputLabel>
-              <Select
-                name="category"
-                value={bookDetails.category}
-                label="Book Category"
+            >
+              <TextField
+                autoFocus
+                margin="dense"
+                name="name"
+                label="Book Name"
+                type="text"
+                fullWidth
+                value={bookDetails.name}
                 onChange={handleChange}
                 sx={{
-                  borderRadius: '8px',
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                name="author"
+                label="Author"
+                type="text"
+                fullWidth
+                value={bookDetails.author}
+                onChange={handleChange}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                name="publisher"
+                label="Publisher"
+                type="text"
+                fullWidth
+                value={bookDetails.publisher}
+                onChange={handleChange}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+              <FormControl fullWidth margin="dense">
+                <InputLabel>Book Category</InputLabel>
+                <Select
+                  name="category"
+                  value={bookDetails.category}
+                  label="Book Category"
+                  onChange={handleChange}
+                  sx={{
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }}
+                >
+                  {BOOK_CATEGORIES.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                margin="dense"
+                name="stock"
+                label="Stock Quantity"
+                type="number"
+                fullWidth
+                value={bookDetails.stock}
+                onChange={handleChange}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                name="isbn"
+                label="ISBN Number"
+                type="text"
+                fullWidth
+                value={bookDetails.isbn}
+                onChange={handleChange}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+
+              <Box sx={{ display: 'flex', gap: '10px', width: '100%' }}>
+                <TextField
+                  margin="dense"
+                  name="price"
+                  label="Price"
+                  type="number"
+                  fullWidth
+                  value={bookDetails.price}
+                  onChange={handleChange}
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      borderRadius: '8px',
+                      fontSize: { xs: '14px', sm: '16px' }
+                    }
+                  }}
+                />
+                <TextField
+                  margin="dense"
+                  name="discount"
+                  label="Discount (%)"
+                  type="number"
+                  fullWidth
+                  value={bookDetails.discount}
+                  onChange={handleChange}
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      borderRadius: '8px',
+                      fontSize: { xs: '14px', sm: '16px' }
+                    }
+                  }}
+                />
+              </Box>
+
+              <TextField
+                margin="dense"
+                name="image"
+                type="file"
+                fullWidth
+                onChange={handleImageChange}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderRadius: '8px',
+                    fontSize: { xs: '14px', sm: '16px' }
+                  }
+                }}
+              />
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: 'center', gap: '10px' }}>
+              <Button
+                onClick={handleClose}
+                color="secondary"
+                variant="outlined"
+                sx={{
+                  px: { xs: 3, sm: 4 },
                   fontSize: { xs: '14px', sm: '16px' }
                 }}
               >
-                {BOOK_CATEGORIES.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              margin="dense"
-              name="stock"
-              label="Stock Quantity"
-              type="number"
-              fullWidth
-              value={bookDetails.stock}
-              onChange={handleChange}
-              sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
-                  fontSize: { xs: '14px', sm: '16px' }
-                }
-              }}
-            />
-            <TextField
-              margin="dense"
-              name="isbn"
-              label="ISBN Number"
-              type="text"
-              fullWidth
-              value={bookDetails.isbn}
-              onChange={handleChange}
-              sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
-                  fontSize: { xs: '14px', sm: '16px' }
-                }
-              }}
-            />
-
-            <Box sx={{ display: 'flex', gap: '10px', width: '100%' }}>
-              <TextField
-                margin="dense"
-                name="price"
-                label="Price"
-                type="number"
-                fullWidth
-                value={bookDetails.price}
-                onChange={handleChange}
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddBook}
+                color="primary"
+                variant="contained"
                 sx={{
-                  '& .MuiInputBase-root': {
-                    borderRadius: '8px',
-                    fontSize: { xs: '14px', sm: '16px' }
-                  }
-                }}
-              />
-              <TextField
-                margin="dense"
-                name="discount"
-                label="Discount (%)"
-                type="number"
-                fullWidth
-                value={bookDetails.discount}
-                onChange={handleChange}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    borderRadius: '8px',
-                    fontSize: { xs: '14px', sm: '16px' }
-                  }
-                }}
-              />
-            </Box>
-
-            <TextField
-              margin="dense"
-              name="image"
-              type="file"
-              fullWidth
-              onChange={handleImageChange}
-              sx={{
-                '& .MuiInputBase-root': {
-                  borderRadius: '8px',
+                  px: { xs: 3, sm: 4 },
                   fontSize: { xs: '14px', sm: '16px' }
-                }
-              }}
-            />
-          </DialogContent>
-          <DialogActions sx={{ justifyContent: 'center', gap: '10px' }}>
-            <Button
-              onClick={handleClose}
-              color="secondary"
-              variant="outlined"
-              sx={{
-                px: { xs: 3, sm: 4 },
-                fontSize: { xs: '14px', sm: '16px' }
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddBook}
-              color="primary"
-              variant="contained"
-              sx={{
-                px: { xs: 3, sm: 4 },
-                fontSize: { xs: '14px', sm: '16px' }
-              }}
-            >
-              Add Book
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-
-
-      </div>
+                }}
+              >
+                Add Book
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      </Box>
     </>
   );
 };

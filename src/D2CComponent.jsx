@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import Navbar from './Nav';
 import { initializeApp } from 'firebase/app';
-import { getDocs,getDoc, getFirestore, collection } from 'firebase/firestore';
+import { getDocs, getDoc, getFirestore, collection } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -249,18 +249,25 @@ const D2CComponent = () => {
                         overflowY: 'auto',
                         height: 'calc(100vh - 64px)',
                         borderLeft: '1px solid #ccc',
-                        display: 'flex',
-                        flexWrap: 'wrap',
+                        display: 'grid',
+                        gridTemplateColumns: {
+                            xs: '1fr', // Single column on extra small screens
+                            sm: 'repeat(2, 1fr)', // Two columns on small screens
+                            md: 'repeat(2, 1fr)', // Two columns on medium screens
+                            lg: 'repeat(3, 1fr)', // Three columns on large screens
+                        },
                         gap: 2,
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-start',
+                        justifyContent: 'center',
+                        alignItems: 'stretch',
                         '&::-webkit-scrollbar': {
                             display: 'none',
                         },
                     }}
                 >
                     {sortedBooks.length === 0 ? (
-                        <Typography variant="h6">No books found</Typography>
+                        <Typography variant="h6" sx={{ gridColumn: 'span 4', textAlign: 'center' }}>
+                            No books found
+                        </Typography>
                     ) : (
                         sortedBooks.map((book) => (
                             <Card
@@ -270,19 +277,23 @@ const D2CComponent = () => {
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
                                     padding: 2,
-                                    maxWidth: '100%',
-                                    minWidth: '300px',
-                                    flex: '1 1 300px', // Makes cards responsive with a minimum width
-                                    height: '300px', // Fixed height for consistent card sizes
+                                    width: '100%', // Ensure full width of grid cell
+                                    height: '300px', // Fixed height
                                     boxShadow: '2px 2px 10px rgba(0,0,0,0.1)',
                                     backgroundColor: 'transparent',
+                                    transition: 'transform 0.3s ease',
                                     '&:hover': {
-                                        transform: 'scale(1.05)',
+                                        transform: 'scale(1.02)',
                                     },
                                 }}
                             >
                                 {/* Left Section - Image */}
-                                <Box sx={{ width: '50%', position: 'relative' }}>
+                                <Box sx={{
+                                    width: '50%',
+                                    position: 'relative',
+                                    display: 'flex',
+                                    alignItems: 'stretch'
+                                }}>
                                     <CardMedia
                                         component="img"
                                         image={book.image || 'default-image.jpg'}
@@ -291,17 +302,42 @@ const D2CComponent = () => {
                                             objectFit: 'cover',
                                             borderRadius: 1,
                                             height: '100%',
+                                            width: '100%'
                                         }}
                                     />
                                 </Box>
 
                                 {/* Right Section - Book Details */}
-                                <Box sx={{ width: '50%', paddingLeft: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <Box
+                                    sx={{
+                                        width: '50%',
+                                        paddingLeft: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between'
+                                    }}
+                                >
                                     <CardContent sx={{ paddingBottom: 1 }}>
-                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
                                             {book.name}
                                         </Typography>
-                                        <Typography variant="subtitle1" sx={{ color: 'gray' }}>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{
+                                                color: 'gray',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
                                             by {book.author}
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -322,11 +358,11 @@ const D2CComponent = () => {
 
                                     <CardActions sx={{ padding: '0 0 0 0' }}>
                                         {!cart[book.id] || cart[book.id] === 0 ? (
-                                            <Button variant="contained" onClick={() => handleAddToCart(book.id)}>
+                                            <Button variant="contained" fullWidth onClick={() => handleAddToCart(book.id)}>
                                                 Add to Cart
                                             </Button>
                                         ) : (
-                                            <ButtonGroup>
+                                            <ButtonGroup fullWidth>
                                                 <Button
                                                     variant="outlined"
                                                     onClick={() => handleQuantityChange(book.id, -1)}
@@ -356,8 +392,6 @@ const D2CComponent = () => {
                                             </ButtonGroup>
                                         )}
                                     </CardActions>
-
-
                                 </Box>
                             </Card>
                         ))

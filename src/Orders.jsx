@@ -12,7 +12,6 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Tooltip,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -99,143 +98,325 @@ const Orders = () => {
     setSelectedOrder(null);
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (orders.length === 0) {
-    return (
-      <Box sx={{ padding: '20px', textAlign: 'center' }}>
-        <Typography variant="h5">No orders found.</Typography>
-      </Box>
-    );
-  }
-
   return (
     <>
       <SellerNavigation />
-      <Box sx={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', position: 'relative' }}>
-        <IconButton
-          onClick={handleBack}
+      <Box
+        sx={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          position: 'relative'
+        }}
+      >
+        {/* Background Image Section */}
+        <Box
           sx={{
             position: 'absolute',
-            top: '20px',
-            left: '20px',
-            zIndex: 10,
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderRadius: '50%',
-            '&:hover': { backgroundColor: '#e0e0e0' },
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '300px',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: 'url(src/assets/orders.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'blur(2px) brightness(0.5)', // Slight blur and darkening
+              transform: 'scale(1.1)',
+              zIndex: -1,
+            },
+            zIndex: 0,
           }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography
-          variant="h4"
-          sx={{
-            textAlign: 'center',
-            marginBottom: '20px',
-            background: 'linear-gradient(90deg, #ff7e5f, #feb47b)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            animation: 'fadeIn 1s',
-          }}
-        >
-          Your Orders
-        </Typography>
+        />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-          {orders.map((order) => (
-            <Card
-              key={order.id}
+        {/* Content Container */}
+        <Box
+          sx={{
+            padding: { xs: '10px', sm: '20px' },
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {/* Back Button */}
+          <IconButton
+            onClick={handleBack}
+            sx={{
+              position: 'absolute',
+              top: { xs: '10px', sm: '20px' },
+              left: { xs: '10px', sm: '20px' },
+              zIndex: 10,
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              color: 'black',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              },
+            }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+
+          {/* Page Title */}
+          <Typography
+            variant="h4"
+            sx={{
+              textAlign: 'center',
+              marginTop: '150px',
+              marginBottom: '30px',
+              fontWeight: 700,
+              color: 'white',
+              textShadow: '2px 2px 4px rgba(0,0,0)',
+            }}
+          >
+            Your Orders
+          </Typography>
+
+          {/* Loading State */}
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+              <CircularProgress size={60} thickness={4} color="secondary" />
+            </Box>
+          ) : orders.length === 0 ? (
+            <Box
               sx={{
-                boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
-                borderRadius: '10px',
-                overflow: 'hidden',
-                animation: 'fadeIn 0.8s ease-in-out',
-                background: 'linear-gradient(145deg, #f5f5f5, #e3e3e3)',
-                '&:hover': { transform: 'scale(1.02)', transition: '0.3s ease-in-out' },
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '60vh',
+                color: 'white',
               }}
             >
-              
-              <CardContent>
-                <Typography variant="h6">Order ID: {order.id}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Buyer: {order.userEmail}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Total Amount: ₹{order.totalAmount}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" sx={{ display: 'flex', alignItems: 'center' }}>
-                  Status:{' '}
-                  {order.orderStatus === 'Delivered' ? (
-                    <CheckCircleIcon color="success" sx={{ marginLeft: '5px' }} />
-                  ) : (
-                    <HourglassEmptyIcon color="warning" sx={{ marginLeft: '5px' }} />
-                  )}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button variant="contained" color="primary" onClick={() => handleOpenDialog(order)}>
-                  View Details
-                </Button>
-                {order.orderStatus !== 'Delivered' && (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => markAsDelivered(order.id)}
-                    sx={{ marginLeft: 'auto' }}
-                  >
-                    Mark as Delivered
-                  </Button>
-                )}
-              </CardActions>
-            </Card>
-          ))}
-        </Box>
-
-        {selectedOrder && (
-          <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="sm">
-            <DialogTitle>Order Details</DialogTitle>
-            <DialogContent>
-              <Typography variant="h6">Order ID: {selectedOrder.id}</Typography>
-              <Typography variant="body1">Buyer: {selectedOrder.userEmail}</Typography>
-              <Typography variant="body1">Total Amount: ₹{selectedOrder.totalAmount}</Typography>
-              <Typography variant="body1">Date: {selectedOrder.date}</Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
-                {selectedOrder.orderItems.map((item, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
-                      padding: '10px',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                    }}
-                  >
-                    <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
-                    <Box>
-                      <Typography variant="body2">{item.name}</Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        by {item.author}
+              <Typography variant="h5" sx={{ color: 'white', mb: 2 }}>
+                No orders found
+              </Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)'
+                },
+                gap: { xs: '15px', sm: '20px' },
+              }}
+            >
+              {orders.map((order) => (
+                <Card
+                  key={order.id}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                    borderRadius: '16px',
+                    transition: 'all 0.3s ease',
+                    height: '350px',
+                    '&:hover': {
+                      transform: 'translateY(-10px)',
+                      boxShadow: '0 12px 24px rgba(0,0,0,0.3)',
+                    },
+                    background: 'white',
+                  }}
+                >
+                  <CardContent sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="subtitle1" fontWeight={600} color="primary">
+                        Order ID: {order.id.slice(-6)}
                       </Typography>
+                      {order.orderStatus === 'Delivered' ? (
+                        <CheckCircleIcon color="success" />
+                      ) : (
+                        <HourglassEmptyIcon color="warning" />
+                      )}
                     </Box>
-                  </Box>
-                ))}
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDialog} color="primary">
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
+
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      Buyer: {order.userEmail}
+                    </Typography>
+
+                    <Typography variant="h6" fontWeight={700} color="primary">
+                      Total: ₹{order.totalAmount}
+                    </Typography>
+
+                    {/* Order Items Preview */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 2, overflow: 'auto' }}>
+                      {order.orderItems.slice(0, 3).map((item, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        </Box>
+                      ))}
+                      {order.orderItems.length > 3 && (
+                        <Box
+                          sx={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: '8px',
+                            backgroundColor: 'rgba(0,0,0,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Typography variant="caption">
+                            +{order.orderItems.length - 3}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </CardContent>
+
+                  <CardActions sx={{
+                    justifyContent: 'space-between',
+                    p: 2,
+                    pt: 0,
+                    borderTop: '1px solid rgba(0,0,0,0.1)'
+                  }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleOpenDialog(order)}
+                      sx={{ borderRadius: '8px' }}
+                    >
+                      View Details
+                    </Button>
+
+                    {order.orderStatus !== 'Delivered' && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        onClick={() => markAsDelivered(order.id)}
+                        sx={{ borderRadius: '8px' }}
+                      >
+                        Mark Delivered
+                      </Button>
+                    )}
+                  </CardActions>
+                </Card>
+              ))}
+            </Box>
+          )}
+
+          {/* Order Details Dialog */}
+          {selectedOrder && (
+            <Dialog
+              open={dialogOpen}
+              onClose={handleCloseDialog}
+              fullWidth
+              maxWidth="sm"
+              PaperProps={{
+                sx: {
+                  borderRadius: '16px',
+                }
+              }}
+            >
+              <DialogTitle sx={{
+                fontWeight: 700,
+                color: 'primary.main',
+                borderBottom: '1px solid rgba(0,0,0,0.1)'
+              }}>
+                Order Details
+              </DialogTitle>
+              <DialogContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="subtitle1">
+                    Order ID: <strong>{selectedOrder.id}</strong>
+                  </Typography>
+                  <Typography variant="subtitle1" color="primary">
+                    Date: {selectedOrder.date}
+                  </Typography>
+                </Box>
+
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  Buyer: {selectedOrder.userEmail}
+                </Typography>
+
+                <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+                  Total Amount: ₹{selectedOrder.totalAmount}
+                </Typography>
+
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  Order Items:
+                </Typography>
+
+                <Box sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                  gap: 2
+                }}>
+                  {selectedOrder.orderItems.map((item, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        p: 2,
+                        border: '1px solid rgba(0,0,0,0.1)',
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: 70,
+                          height: 70,
+                          objectFit: 'cover',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Box>
+                        <Typography variant="body1" fontWeight={600}>
+                          {item.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          by {item.author}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleCloseDialog}
+                  color="primary"
+                  variant="contained"
+                  sx={{ borderRadius: '8px' }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </Box>
       </Box>
       <Footer />
     </>

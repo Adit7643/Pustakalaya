@@ -137,17 +137,36 @@ const Navbar = () => {
             alignItems: 'center',
           }}
         >
-          <Typography
-            variant="h6"
+          <Box
             sx={{
-              flexGrow: { xs: 1, md: 0 },
-              textAlign: { xs: 'center', md: 'left' },
-              display: { xs: 'flex', md: 'flex' },
-              justifyContent: { xs: 'center', md: 'flex-start' },
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}
           >
-            Pustakalaya
-          </Typography>
+            <Box
+              component="img"
+              src='src/assets/Colorful.png'
+              alt="Pustakalaya"
+              sx={{
+                height: 40,
+                width: 40,
+                objectFit: 'contain',
+                marginRight: 1, // Adds space between logo and text
+                verticalAlign: 'middle'
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                lineHeight: 1
+              }}
+            >
+              Pustakalaya
+            </Typography>
+          </Box>
 
           <Box
             sx={{
