@@ -35,7 +35,7 @@ import { getFirestore, getDoc, doc, setDoc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import Footer from './Footer';
 import SellerDetailsCard from './SellerDetailsCard';
-
+import Google from "./assets/google-icon.jpg";
 // Dummy data for earnings, orders, and transactions
 const totalEarningsTarget = 100000;
 const recentTransactions = [
@@ -517,7 +517,7 @@ const SellerDashboard = () => {
                     color="primary"
                     fullWidth
                     sx={{ mt: 1, textTransform: 'none' }}
-                    startIcon={<img src="src/assets/google-icon.jpg" alt="Google" style={{ width: 20 }} />}
+                    startIcon={<img src={Google} alt="Google" style={{ width: 20 }} />}
                     onClick={handleGoogleSignIn}
                   >
                     Login with Google

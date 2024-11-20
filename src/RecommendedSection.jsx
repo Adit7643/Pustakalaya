@@ -4,40 +4,46 @@ import { Box, Typography, IconButton } from '@mui/material';
 import BookCard from './BookCard';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Book6 from '../assets/book-6.jpg';
+import Book7 from '../assets/book-7.jpg';
+import Book8 from '../assets/book-8.jpg';
+import Book9 from '../assets/book-9.jpg';
+import Book10 from '../assets/book-10.jpg';
 
 const RecommendedSection = () => {
   const books = [
     {
       title: "Book Title 1",
       description: "Description of Book 1.",
-      image: "src/assets/book-6.jpg", // Replace with actual image URL
+      image: Book6,
       buyLink: "#",
     },
     {
       title: "Book Title 2",
       description: "Description of Book 2.",
-      image: "src/assets/book-7.jpg", // Replace with actual image URL
+      image: Book7,
       buyLink: "#",
     },
     {
       title: "Book Title 3",
       description: "Description of Book 3.",
-      image: "src/assets/book-8.jpg", // Replace with actual image URL
+      image: Book8,
       buyLink: "#",
     },
     {
       title: "Book Title 4",
       description: "Description of Book 4.",
-      image: "src/assets/book-9.jpg", // Replace with actual image URL
+      image: Book9,
       buyLink: "#",
     },
     {
       title: "Book Title 5",
       description: "Description of Book 5.",
-      image: "src/assets/book-10.jpg", // Replace with actual image URL
+      image: Book10,
       buyLink: "#",
     },
   ];
+
 
   const settings = {
     dots: false,
