@@ -16,17 +16,23 @@ import {
     Select,
     MenuItem,
     FormControl,
-    InputLabel
+    InputLabel,
+    Grid,
+    Paper
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { initializeApp } from 'firebase/app';
 import { getDocs, increment, getFirestore, setDoc, deleteDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+// ... rest of your imports remain the same
 
 const Cart = () => {
+    // ... previous state and logic remain the same
     const userEmail = localStorage.getItem('user');
     const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
@@ -270,103 +276,329 @@ const Cart = () => {
         pay.open();
     };
 
+
     return (
-        <Box sx={{ display: 'flex', padding: 3 }}>
-            <Box sx={{ flexGrow: 1, marginRight: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                    Shopping Cart
-                </Typography>
-                <Divider sx={{ marginBottom: 2 }} />
-
-                {cartItems.length === 0 ? (
-                    <Typography variant="body1">Your cart is empty.</Typography>
-                ) : (
-                    cartItems.map((item) => (
-                        <Card key={item.bookId} sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                            <CardMedia
-                                component="img"
-                                image={item.image}
-                                alt={item.name}
-                                sx={{ width: 100, height: 100, marginRight: 2 }}
-                            />
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6">{item.name}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    by {item.author}
-                                </Typography>
-                                <Typography variant="body2">
-                                    ₹{item.price} x {item.quantity} = ₹{item.price * item.quantity}
-                                </Typography>
-                                <ButtonGroup variant="outlined" size="small" sx={{ marginTop: 1 }}>
-                                    <Button onClick={() => handleQuantityChange(item.bookId, -1)}>-</Button>
-                                    <Typography sx={{ padding: '0 10px', minWidth: '30px', textAlign: 'center' }}>{item.quantity}</Typography>
-                                    <Button onClick={() => handleQuantityChange(item.bookId, 1)}>+</Button>
-                                </ButtonGroup>
-                            </CardContent>
-                            <CardActions>
-                                <IconButton onClick={() => handleRemoveItem(item.bookId)} color="secondary">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </CardActions>
-                        </Card>
-                    ))
-                )}
-            </Box>
-
-            <Box
-                sx={{
-                    width: 300,
-                    padding: 2,
-                    border: '1px solid #ddd',
-                    borderRadius: 1,
-                    backgroundColor: '#fafafa'
-                }}
-            >
-                <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                    Price Details
-                </Typography>
-                <Divider sx={{ marginBottom: 2 }} />
-
-                {cartItems.map((item) => (
-                    <Box key={item.bookId} sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 1 }}>
-                        <Typography variant="body2">{item.name}</Typography>
-                        <Typography variant="body2">₹{item.price * item.quantity}</Typography>
-                    </Box>
-                ))}
-
-                <Divider sx={{ marginY: 2 }} />
-
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Total Amount</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>₹{totalAmount}</Typography>
-                </Box>
-
-                <FormControl fullWidth>
-                    <InputLabel id="address-select-label">Select Address</InputLabel>
-                    <Select
-                        labelId="address-select-label"
-                        value={selectedAddress}
-                        onChange={(e) => setSelectedAddress(e.target.value)}
+        <Box sx={{ 
+            flexGrow: 1, 
+            padding: 3, 
+            backgroundColor: '#f4f4f4', 
+            minHeight: '100vh' 
+        }}>
+            <Grid container spacing={3}>
+                {/* Left Side - Cart Items */}
+                <Grid item xs={12} md={8}>
+                    <Paper 
+                        elevation={3} 
+                        sx={{ 
+                            padding: 3, 
+                            borderRadius: 2 
+                        }}
                     >
-                        {addresses.map((address) => (
-                            <MenuItem key={address.id} value={address}>
-                                {`${address.addressName}, ${address.address}`}
-                            </MenuItem>
-                        ))}
-                        <MenuItem value="">None</MenuItem>
-                    </Select>
-                </FormControl>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            marginBottom: 2 
+                        }}>
+                            <ShoppingCartCheckoutIcon 
+                                sx={{ 
+                                    marginRight: 2, 
+                                    color: 'primary.main' 
+                                }} 
+                            />
+                            <Typography 
+                                variant="h5" 
+                                sx={{ 
+                                    fontWeight: 'bold', 
+                                    color: 'text.primary' 
+                                }}
+                            >
+                                Your Shopping Cart
+                            </Typography>
+                        </Box>
 
-                <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ marginTop: 2 }}
-                    color="primary"
-                    onClick={handleProceedToPay}
-                >
-                    Proceed to Pay
-                </Button>
-            </Box>
+                        <Divider sx={{ marginBottom: 2 }} />
+
+                        {cartItems.length === 0 ? (
+                            <Box sx={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                height: 300 
+                            }}>
+                                <Typography 
+                                    variant="h6" 
+                                    sx={{ 
+                                        color: 'text.secondary', 
+                                        marginBottom: 2 
+                                    }}
+                                >
+                                    Your cart is empty
+                                </Typography>
+                                <Button 
+                                    variant="contained" 
+                                    color="primary"
+                                    onClick={() => window.location.href = '/buy '}
+                                >
+                                    Continue Shopping
+                                </Button>
+                            </Box>
+                        ) : (
+                            cartItems.map((item) => (
+                                <Card 
+                                    key={item.bookId} 
+                                    sx={{ 
+                                        display: 'flex', 
+                                        marginBottom: 2, 
+                                        boxShadow: 1,
+                                        transition: 'transform 0.2s',
+                                        '&:hover': {
+                                            transform: 'scale(1.01)'
+                                        }
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={item.image}
+                                        alt={item.name}
+                                        sx={{ 
+                                            width: 150, 
+                                            height: 200, 
+                                            objectFit: 'cover' 
+                                        }}
+                                    />
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        flexGrow: 1, 
+                                        padding: 2 
+                                    }}>
+                                        <CardContent sx={{ flexGrow: 1 }}>
+                                            <Typography 
+                                                variant="h6" 
+                                                sx={{ fontWeight: 'bold' }}
+                                            >
+                                                {item.name}
+                                            </Typography>
+                                            <Typography 
+                                                variant="body2" 
+                                                color="text.secondary"
+                                            >
+                                                by {item.author}
+                                            </Typography>
+                                            <Typography 
+                                                variant="body1" 
+                                                sx={{ 
+                                                    fontWeight: 'bold', 
+                                                    color: 'primary.main',
+                                                    marginTop: 1 
+                                                }}
+                                            >
+                                                ₹{item.price}
+                                            </Typography>
+                                        </CardContent>
+
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'space-between', 
+                                            alignItems: 'center' 
+                                        }}>
+                                            <ButtonGroup 
+                                                variant="outlined" 
+                                                size="small"
+                                            >
+                                                <Button 
+                                                    onClick={() => handleQuantityChange(item.bookId, -1)}
+                                                >
+                                                    -
+                                                </Button>
+                                                <Typography 
+                                                    sx={{ 
+                                                        padding: '0 10px', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center' 
+                                                    }}
+                                                >
+                                                    {item.quantity}
+                                                </Typography>
+                                                <Button 
+                                                    onClick={() => handleQuantityChange(item.bookId, 1)}
+                                                >
+                                                    +
+                                                </Button>
+                                            </ButtonGroup>
+                                            <Typography 
+                                                variant="subtitle1" 
+                                                sx={{ fontWeight: 'bold' }}
+                                            >
+                                                ₹{item.price * item.quantity}
+                                            </Typography>
+                                            <IconButton 
+                                                onClick={() => handleRemoveItem(item.bookId)} 
+                                                color="error"
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Box>
+                                </Card>
+                            ))
+                        )}
+                    </Paper>
+                </Grid>
+
+                {/* Right Side - Order Summary */}
+                <Grid item xs={12} md={4}>
+                    <Paper 
+                        elevation={3} 
+                        sx={{ 
+                            padding: 3, 
+                            borderRadius: 2,
+                            position: 'sticky',
+                            top: 20
+                        }}
+                    >
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            marginBottom: 2 
+                        }}>
+                            <LocalShippingIcon 
+                                sx={{ 
+                                    marginRight: 2, 
+                                    color: 'primary.main' 
+                                }} 
+                            />
+                            <Typography 
+                                variant="h6" 
+                                sx={{ 
+                                    fontWeight: 'bold', 
+                                    color: 'text.primary' 
+                                }}
+                            >
+                                Order Summary
+                            </Typography>
+                        </Box>
+
+                        <Divider sx={{ marginBottom: 2 }} />
+
+                        {cartItems.map((item) => (
+                            <Box 
+                                key={item.bookId} 
+                                sx={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    marginBottom: 1 
+                                }}
+                            >
+                                <Typography variant="body2">
+                                    {item.name} x {item.quantity}
+                                </Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                    ₹{item.price * item.quantity}
+                                </Typography>
+                            </Box>
+                        ))}
+
+                        <Divider sx={{ marginY: 2 }} />
+
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            marginBottom: 2 
+                        }}>
+                            <Typography variant="subtitle1">Total Items</Typography>
+                            <Typography variant="subtitle1">
+                                {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                            </Typography>
+                        </Box>
+
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            marginBottom: 2 
+                        }}>
+                            <Typography 
+                                variant="h6" 
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                Total Amount
+                            </Typography>
+                            <Typography 
+                                variant="h6" 
+                                sx={{ 
+                                    fontWeight: 'bold', 
+                                    color: 'primary.main' 
+                                }}
+                            >
+                                ₹{totalAmount}
+                            </Typography>
+                        </Box>
+
+                        <FormControl 
+                            fullWidth 
+                            variant="outlined" 
+                            sx={{ marginBottom: 2 }}
+                        >
+                            <InputLabel id="address-select-label">
+                                Select Delivery Address
+                            </InputLabel>
+                            <Select
+                                labelId="address-select-label"
+                                value={selectedAddress}
+                                onChange={(e) => setSelectedAddress(e.target.value)}
+                                label="Select Delivery Address"
+                            >
+                                {addresses.map((address) => (
+                                    <MenuItem key={address.id} value={address}>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                {address.addressName}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {address.address}
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                ))}
+                                <MenuItem value="">No Address Selected</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            startIcon={<ShoppingCartCheckoutIcon />}
+                            onClick={handleProceedToPay}
+                            sx={{
+                                padding: 1.5,
+                                borderRadius: 2,
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-3px)',
+                                    boxShadow: 3
+                                }
+                            }}
+                            disabled={cartItems.length === 0}
+                        >
+                            Proceed to Checkout
+                        </Button>
+
+                        <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                                marginTop: 2, 
+                                textAlign: 'center' 
+                            }}
+                        >
+                            Secure checkout with Razorpay
+                        </Typography>
+                    </Paper>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

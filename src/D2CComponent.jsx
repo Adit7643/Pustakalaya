@@ -16,12 +16,30 @@ import {
     FormControlLabel,
     ButtonGroup,
     Slider,
-    CardMedia
+    CardMedia,
+    IconButton
 } from '@mui/material';
 import Navbar from './Nav';
 import { initializeApp } from 'firebase/app';
 import { getDocs, getDoc, getFirestore, collection } from 'firebase/firestore';
 import { firebaseConfig } from '../config';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { styled } from '@mui/material/styles';
+
+// Styled Wishlist Icon with Animation
+const AnimatedWishlistIcon = styled(IconButton)(({ theme, isfavorite }) => ({
+    transition: 'all 0.3s ease',
+    color: isfavorite === 'true' ? theme.palette.error.main : theme.palette.grey[500],
+    '&:hover': {
+        transform: 'scale(1.2)',
+        background: 'linear-gradient(45deg, rgba(255,0,0,0.1), rgba(255,0,0,0.2))',
+    },
+    '& .MuiIconButton-root': {
+        transition: 'all 0.3s ease',
+    },
+}));
+
 
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
@@ -33,6 +51,7 @@ const D2CComponent = () => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [books, setBooks] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 10000]);
+    const [wishlist, setWishlist] = useState({});
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -49,9 +68,56 @@ const D2CComponent = () => {
                 console.error('Error fetching books:', error);
             }
         };
+        const fetchWishlist = async () => {
+            try {
+                const userEmail = localStorage.getItem('user');
+                if (!userEmail) return;
 
+                const wishlistRef = doc(db, 'user', userEmail);
+                const wishlistSnapshot = await getDoc(wishlistRef);
+
+                if (wishlistSnapshot.exists()) {
+                    const wishlistData = wishlistSnapshot.data().wishlist || {};
+                    setWishlist(wishlistData);
+                }
+            } catch (error) {
+                console.error('Error fetching wishlist:', error);
+            }
+        };
+
+        fetchWishlist();
         fetchBooks();
     }, []);
+
+    const handleWishlistToggle = async (book) => {
+        try {
+            const userEmail = localStorage.getItem('user');
+            if (!userEmail) {
+                alert("Please login to add to wishlist");
+                return;
+            }
+
+            const wishlistRef = doc(db, 'user', userEmail, 'wishlist', book.id);
+
+            setWishlist((prev) => {
+                const newWishlist = { ...prev };
+
+                if (newWishlist[book.id]) {
+                    // Remove from wishlist
+                    delete newWishlist[book.id];
+                    deleteDoc(wishlistRef);
+                } else {
+                    // Add to wishlist
+                    newWishlist[book.id] = book;
+                    setDoc(wishlistRef, book);
+                }
+
+                return newWishlist;
+            });
+        } catch (error) {
+            console.error('Error updating wishlist:', error);
+        }
+    };
 
     const handleAddToCart = async (bookId) => {
         setCart((prev) => {
@@ -287,6 +353,7 @@ const D2CComponent = () => {
                                     },
                                 }}
                             >
+
                                 {/* Left Section - Image */}
                                 <Box sx={{
                                     width: '50%',
@@ -317,6 +384,19 @@ const D2CComponent = () => {
                                         justifyContent: 'space-between'
                                     }}
                                 >
+                                    <AnimatedWishlistIcon
+                                        isfavorite={(wishlist[book.id] ? 'true' : 'false')}
+                                        onClick={() => handleWishlistToggle(book)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 10,
+                                            right:12,
+                                            background: 'rgba(255,255,255,0.7)',
+                                            borderRadius: '50%',
+                                        }}
+                                    >
+                                        {wishlist[book.id] ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                                    </AnimatedWishlistIcon>
                                     <CardContent sx={{ paddingBottom: 1 }}>
                                         <Typography
                                             variant="h6"

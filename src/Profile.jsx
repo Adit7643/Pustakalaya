@@ -15,8 +15,11 @@ import {
     DialogActions,
     TextField,
     IconButton,
+    Grid,
+    Fade,
 } from '@mui/material';
-import { Edit, LocationOn, Delete } from '@mui/icons-material';
+import { Edit, LocationOn, Delete, AddCircle } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, getDocs, collection } from 'firebase/firestore';
 import axios from 'axios';
@@ -26,7 +29,45 @@ import { firebaseConfig } from '../config';
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
+
+// Styled Components for Enhanced Animations and Gradients
+const AnimatedCard = styled(Card)(({ theme }) => ({
+    transition: 'all 0.3s ease-in-out',
+    background: 'linear-gradient(145deg, #f0f4f8, #ffffff)',
+    boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+    borderRadius: '16px',
+    '&:hover': {
+        transform: 'scale(1.02)',
+        boxShadow: '0 15px 30px rgba(0,0,0,0.15)',
+    },
+}));
+
+const GradientAvatar = styled(Avatar)(({ theme }) => ({
+    background: 'linear-gradient(45deg, #6a11cb 0%, #2575fc 100%)',
+    border: '4px solid white',
+    boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+        transform: 'scale(1.1) rotate(5deg)',
+    },
+}));
+
+const ScrollableBox = styled(Box)(({ theme }) => ({
+    maxHeight: '400px',
+    overflowY: 'auto',
+    paddingRight: '10px',
+    scrollbarWidth: 'thin',
+    '&::-webkit-scrollbar': {
+        width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        borderRadius: '4px',
+    },
+}));
+
 const Profile = () => {
+    // ... (previous state and methods remain the same)
     const userEmail = localStorage.getItem('user');
     const [profileDetails, setProfileDetails] = useState({ name: '', email: '', address: '' });
     const [profileImage, setProfileImage] = useState('');
@@ -35,7 +76,7 @@ const Profile = () => {
     const [newAddressName, setNewAddressName] = useState('');
     const [addresses, setAddresses] = useState([]);
 
-    // Fetch profile details, orders, and addresses
+    // ... (previous useEffect and other methods remain the same)
     useEffect(() => {
         const fetchProfileDetails = async () => {
             try {
@@ -90,7 +131,7 @@ const Profile = () => {
             setAddresses((prev) => [...prev, { id: addressId, ...updatedAddressDetails }]);
             setDialogOpen(false);
 
-            
+
             setNewAddressName('');
         } catch (error) {
             console.error('Error saving address:', error);
@@ -130,119 +171,262 @@ const Profile = () => {
     };
 
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Profile Section */}
-            <Card sx={{ marginBottom: 3 }}>
-                <CardContent>
-                    <Box display="flex" alignItems="center" sx={{ marginBottom: 3 }}>
-                        <Avatar sx={{ width: 80, height: 80, marginRight: 3 }} src={profileImage}>
-                            {profileDetails.name[0]}
-                        </Avatar>
-                        <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                {profileDetails.name}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                {profileDetails.email}
-                            </Typography>
-                        </Box>
-                        <Box ml="auto">
-                            <Button variant="outlined" component="label" startIcon={<Edit />}>
-                                Upload Image
-                                <input hidden accept="image/*" type="file" onChange={handleImageUpload} />
-                            </Button>
-                        </Box>
-                    </Box>
-
-                    {/* Address Section */}
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                        <LocationOn sx={{ marginRight: 1 }} /> Addresses
-                    </Typography>
-                    {addresses.length > 0 ? (
-                        addresses.map((address) => (
-                            <Card key={address.id} sx={{ marginTop: 2, padding: 2, boxShadow: 3 }}>
+        <Box
+            sx={{
+                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                minHeight: '100vh',
+                py: 4
+            }}
+        >
+            <Box sx={{
+                maxWidth: '1200px',
+                margin: '0 auto',
+                padding: { xs: 2, sm: 3 }
+            }}>
+                <Grid container spacing={4}>
+                    {/* Profile Section */}
+                    <Grid item xs={12} md={4}>
+                        <Fade in={true} timeout={1000}>
+                            <AnimatedCard>
                                 <CardContent>
-                                    <Typography variant="body1">{address.address}</Typography>
-                                    <Box display="flex" justifyContent="flex-end">
-                                        <IconButton onClick={() => handleDeleteAddress(address.id)}>
-                                            <Delete />
+                                    <Box
+                                        display="flex"
+                                        flexDirection="column"
+                                        alignItems="center"
+                                        sx={{ marginBottom: 3 }}
+                                    >
+                                        <GradientAvatar
+                                            sx={{
+                                                width: 140,
+                                                height: 140,
+                                                marginBottom: 2,
+                                            }}
+                                            src={profileImage}
+                                        >
+                                            {profileDetails.name[0]}
+                                        </GradientAvatar>
+                                        <Typography
+                                            variant="h5"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                marginBottom: 1,
+                                                background: 'linear-gradient(45deg, #6a11cb, #2575fc)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                            }}
+                                        >
+                                            {profileDetails.name}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            color="textSecondary"
+                                        >
+                                            {profileDetails.email}
+                                        </Typography>
+                                    </Box>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        component="label"
+                                        startIcon={<Edit />}
+                                        sx={{
+                                            background: 'linear-gradient(45deg, #6a11cb 0%, #2575fc 100%)',
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                                transform: 'scale(1.05)',
+                                                boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
+                                            }
+                                        }}
+                                    >
+                                        Upload Image
+                                        <input
+                                            hidden
+                                            accept="image/*"
+                                            type="file"
+                                            onChange={handleImageUpload}
+                                        />
+                                    </Button>
+                                </CardContent>
+                            </AnimatedCard>
+                        </Fade>
+                    </Grid>
+
+                    {/* Addresses Section */}
+                    <Grid item xs={12} md={8}>
+                        <Fade in={true} timeout={1500}>
+                            <AnimatedCard>
+                                <CardContent>
+                                    <Box
+                                        display="flex"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                        sx={{ marginBottom: 2 }}
+                                    >
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                background: 'linear-gradient(45deg, #6a11cb, #2575fc)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                            }}
+                                        >
+                                            <LocationOn sx={{ marginRight: 1 }} /> Addresses
+                                        </Typography>
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => setDialogOpen(true)}
+                                            sx={{
+                                                transition: 'transform 0.3s ease',
+                                                '&:hover': {
+                                                    transform: 'scale(1.2) rotate(360deg)',
+                                                }
+                                            }}
+                                        >
+                                            <AddCircle />
                                         </IconButton>
                                     </Box>
+
+                                    <ScrollableBox>
+                                        {addresses.length > 0 ? (
+                                            addresses.map((address, index) => (
+                                                <Fade in={true} timeout={500 * (index + 1)} key={address.id}>
+                                                    <AnimatedCard
+                                                        sx={{
+                                                            marginBottom: 2,
+                                                            background: 'linear-gradient(145deg, #ffffff, #f0f4f8)',
+                                                        }}
+                                                    >
+                                                        <CardContent
+                                                            sx={{
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center'
+                                                            }}
+                                                        >
+                                                            <Box>
+                                                                <Typography
+                                                                    variant="body 1"
+                                                                >
+                                                                    {address.addressName}
+                                                                </Typography>
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    color="textSecondary"
+                                                                >
+                                                                    {address.address}
+                                                                </Typography>
+                                                            </Box>
+                                                            <IconButton
+                                                                color="error"
+                                                                onClick={() => handleDeleteAddress(address.id)}
+                                                            >
+                                                                <Delete />
+                                                            </IconButton>
+                                                        </CardContent>
+                                                    </AnimatedCard>
+                                                </Fade>
+                                            ))
+                                        ) : (
+                                            <Typography
+                                                variant="body2"
+                                                color="textSecondary"
+                                                textAlign="center"
+                                            >
+                                                No addresses found.
+                                            </Typography>
+                                        )}
+                                    </ScrollableBox>
                                 </CardContent>
-                            </Card>
-                        ))
-                    ) : (
-                        <Typography variant="body2" color="textSecondary">
-                            No addresses found.
+                            </AnimatedCard>
+                        </Fade>
+                    </Grid>
+
+                    {/* Orders Section */}
+                    <Grid item xs={12}>
+                        <Fade in={true} timeout={2000}>
+                            <AnimatedCard>
+                                <CardContent>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            marginBottom: 2
+                                        }}
+                                    >
+                                        Orders
+                                    </Typography>
+
+                                    <ScrollableBox>
+                                        {orders.map((order) => (
+                                            <Fade in={true} timeout={500} key={order.id}>
+                                                <AnimatedCard
+                                                    sx={{
+                                                        marginBottom: 2,
+                                                        background: 'linear-gradient(145deg, #ffffff, #f0f4f8)',
+                                                    }}
+                                                >
+                                                    <CardContent>
+                                                        <Typography>
+                                                            <strong>Order ID:</strong> {order.id}
+                                                        </Typography>
+                                                        <Typography>
+                                                            <strong>Order Date:</strong> {order.date || 'N/A'}
+                                                        </Typography>
+                                                        <Typography>
+                                                            <strong>Payment ID:</strong> {order.paymentId || 'N/A'}
+                                                        </Typography>
+                                                        <Typography>
+                                                            <strong>Items:</strong>
+                                                        </Typography>
+                                                        <List>
+                                                            {order.orderItems?.map((item, index) => (
+                                                                <ListItem key={index}>
+                                                                    <ListItemAvatar>
+                                                                        <Avatar src={item.image} />
+                                                                    </ListItemAvatar>
+                                                                    <ListItemText primary={item.name} secondary={`Qty: ${item.quantity}`} />
+                                                                </ListItem>
+                                                            ))}
+                                                        </List>
+                                                    </CardContent>
+                                                </AnimatedCard>
+                                            </Fade>
+                                        ))}
+                                    </ScrollableBox>
+                                </CardContent>
+                            </AnimatedCard>
+                        </Fade>
+                    </Grid>
+                </Grid>
+
+                {/* Add Address Dialog */}
+                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="md">
+                    <DialogContent>
+                        <Typography variant="h6" gutterBottom>
+                            Add New Address
                         </Typography>
-                    )}
-                    <Button onClick={() => setDialogOpen(true)} sx={{ marginTop: 2 }}>
-                        Add Address
-                    </Button>
-                </CardContent>
-            </Card>
-
-            {/* Orders Section */}
-            <Card>
-                <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        Orders
-                    </Typography>
-                    {orders.map((order) => (
-                        <Card key={order.id} sx={{ marginTop: 2, padding: 2, boxShadow: 3 }}>
-                            <CardContent>
-                                <Typography>
-                                    <strong>Order ID:</strong> {order.id}
-                                </Typography>
-                                <Typography>
-                                    <strong>Order Date:</strong> {order.date || 'N/A'}
-                                </Typography>
-                                <Typography>
-                                    <strong>Payment ID:</strong> {order.paymentId || 'N/A'}
-                                </Typography>
-                                <Typography>
-                                    <strong>Items:</strong>
-                                </Typography>
-                                <List>
-                                    {order.orderItems?.map((item, index) => (
-                                        <ListItem key={index}>
-                                            <ListItemAvatar>
-                                                <Avatar src={item.image} />
-                                            </ListItemAvatar>
-                                            <ListItemText primary={item.name} secondary={`Qty: ${item.quantity}`} />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </CardContent>
-            </Card>
-
-            {/* Add Address Dialog */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="md">
-                <DialogContent>
-                    <Typography variant="h6" gutterBottom>
-                        Add New Address
-                    </Typography>
-                    <TextField
-                        label="Address Name"
-                        value={newAddressName}
-                        onChange={(e) => setNewAddressName(e.target.value)}
-                        fullWidth
-                        sx={{ marginBottom: 2 }}
-                    />
-                    <MapComponent />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDialogOpen(false)} variant="outlined">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleSaveAddress} variant="contained">
-                        Save Address
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                        <TextField
+                            label="Address Name"
+                            value={newAddressName}
+                            onChange={(e) => setNewAddressName(e.target.value)}
+                            fullWidth
+                            sx={{ marginBottom: 2 }}
+                        />
+                        <MapComponent />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)} variant="outlined">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSaveAddress} variant="contained">
+                            Save Address
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Box>
         </Box>
     );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, collection } from 'firebase/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import {
   AppBar, Toolbar, Typography, Button, Box, IconButton, InputBase, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tab, Tabs, ListItemIcon, ListItemText,
@@ -22,7 +22,8 @@ import {
   ChildFriendly,
   Psychology,
   Gavel,
-  ExitToApp
+  ExitToApp,
+  Badge
 } from '@mui/icons-material';
 import { Avatar, Divider } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -31,7 +32,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { firebaseConfig } from '../config';
 import { doc, setDoc } from "firebase/firestore";
-import Logo from "./assets/Colorful.png"
+import Logo from "./assets/Colorful.png";
+import { onSnapshot } from 'firebase/firestore';
 
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -47,11 +49,14 @@ const Navbar = () => {
   const [Password, setPassword] = useState("");
   const [Email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
+  const [cartItemCount, setCartItemCount] = useState(0)
+
 
   const openCategories = Boolean(anchorElCategories);
   const openProfileMenu = Boolean(anchorElProfile);
 
   useEffect(() => {
+    const userEmail = localStorage.getItem('user');
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true);
@@ -60,7 +65,17 @@ const Navbar = () => {
         setIsLoggedIn(false);
       }
     });
-  }, []);
+    if (userEmail && isLoggedIn) {
+      const cartRef = collection(db, 'user', userEmail, 'cart');
+      const unsubscribe = onSnapshot(cartRef, (snapshot) => {
+        setCartItemCount(snapshot.docs.length-1);
+      });
+      return () => unsubscribe();
+    } else {
+      setCartItemCount(0);
+    }
+
+  }, [isLoggedIn]);
 
   const handleCategoriesClick = (event) => {
     setAnchorElCategories(event.currentTarget);
@@ -291,12 +306,34 @@ const Navbar = () => {
             <IconButton color="inherit" onClick={handleProfileClick}>
               <AccountCircle />
             </IconButton>
-            <Link to="/cart">
+            <Link to="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <IconButton sx={{ color: 'white' }}>
                 <ShoppingCart />
               </IconButton>
+              {cartItemCount > 0 && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '0px',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    border: '2px solid white',
+                    zIndex: 1,
+                  }}
+                >
+                  {cartItemCount}
+                </Box>
+              )}
             </Link>
-
           </Box>
         </Toolbar>
       </AppBar>
