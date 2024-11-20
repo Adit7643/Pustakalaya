@@ -4,11 +4,11 @@ import { Box, Typography, IconButton } from '@mui/material';
 import BookCard from './BookCard';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Book6 from '../assets/book-6.jpg';
-import Book7 from '../assets/book-7.jpg';
-import Book8 from '../assets/book-8.jpg';
-import Book9 from '../assets/book-9.jpg';
-import Book10 from '../assets/book-10.jpg';
+import Book6 from './assets/book-6.jpg';
+import Book7 from './assets/book-7.jpg';
+import Book8 from './assets/book-8.jpg';
+import Book9 from './assets/book-9.jpg';
+import Book10 from './assets/book-10.jpg';
 
 const RecommendedSection = () => {
   const books = [
