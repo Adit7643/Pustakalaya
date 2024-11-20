@@ -3,113 +3,125 @@ import Slider from "react-slick";
 import { Box, Typography, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Book1 from './assets/book-1.jpg';
+import Book2 from './assets/book-2.jpg';
+import Book3 from './assets/book-3.jpg';
+import Book4 from './assets/book-4.jpg';
+import Book5 from './assets/book-5.jpg';
+import Book6 from './assets/book-6.jpg';
+import Book7 from './assets/book-7.jpg';
+import Book8 from './assets/book-8.jpg';
+import Book9 from './assets/book-9.jpg';
+import Book10 from './assets/book-10.jpg';
+import Book11 from './assets/book-11.jpg';
+import Book12 from './assets/book-12.jpg';
 
 // Dummy data for books
 const allBooks = [
-  { 
-    title: "The Great Gatsby", 
-    author: "F. Scott Fitzgerald", 
+  {
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
     publication: "Scribner",
-    price: 12.99, 
-    image: "src/assets/book-1.jpg" 
+    price: 12.99,
+    image: Book1
   },
-  { 
-    title: "To Kill a Mockingbird", 
-    author: "Harper Lee", 
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
     publication: "J.B. Lippincott & Co.",
-    price: 14.99, 
-    image: "src/assets/book-2.jpg" 
+    price: 14.99,
+    image: Book2
   },
-  { 
-    title: "1984", 
-    author: "George Orwell", 
+  {
+    title: "1984",
+    author: "George Orwell",
     publication: "Penguin Books",
-    price: 10.50, 
-    image: "src/assets/book-3.jpg" 
+    price: 10.50,
+    image: Book3
   },
-  { 
-    title: "Pride and Prejudice", 
-    author: "Jane Austen", 
+  {
+    title: "Pride and Prejudice",
+    author: "Jane Austen",
     publication: "T. Egerton, Whitehall",
-    price: 9.99, 
-    image: "src/assets/book-4.jpg" 
+    price: 9.99,
+    image: Book4
   },
-  { 
-    title: "The Catcher in the Rye", 
-    author: "J.D. Salinger", 
+  {
+    title: "The Catcher in the Rye",
+    author: "J.D. Salinger",
     publication: "Little, Brown and Company",
-    price: 11.25, 
-    image: "src/assets/book-5.jpg" 
+    price: 11.25,
+    image: Book5
   },
-  { 
-    title: "Brave New World", 
-    author: "Aldous Huxley", 
+  {
+    title: "Brave New World",
+    author: "Aldous Huxley",
     publication: "Chatto & Windus",
-    price: 13.75, 
-    image: "src/assets/book-6.jpg" 
+    price: 13.75,
+    image: Book6
   },
-  { 
-    title: "The Hobbit", 
-    author: "J.R.R. Tolkien", 
+  {
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
     publication: "George Allen & Unwin",
-    price: 15.50, 
-    image: "src/assets/book-7.jpg" 
+    price: 15.50,
+    image: Book7
   },
-  { 
-    title: "Fahrenheit 451", 
-    author: "Ray Bradbury", 
+  {
+    title: "Fahrenheit 451",
+    author: "Ray Bradbury",
     publication: "Ballantine Books",
-    price: 10.99, 
-    image: "src/assets/book-8.jpg" 
+    price: 10.99,
+    image: Book8
   },
-  { 
-    title: "The Alchemist", 
-    author: "Paulo Coelho", 
+  {
+    title: "The Alchemist",
+    author: "Paulo Coelho",
     publication: "HarperOne",
-    price: 12.50, 
-    image: "src/assets/book-9.jpg" 
+    price: 12.50,
+    image: Book9
   },
-  { 
-    title: "Animal Farm", 
-    author: "George Orwell", 
+  {
+    title: "Animal Farm",
+    author: "George Orwell",
     publication: "Secker and Warburg",
-    price: 8.99, 
-    image: "src/assets/book-10.jpg" 
+    price: 8.99,
+    image: Book10
   },
-  { 
-    title: "The Da Vinci Code", 
-    author: "Dan Brown", 
+  {
+    title: "The Da Vinci Code",
+    author: "Dan Brown",
     publication: "Doubleday",
-    price: 14.25, 
-    image: "src/assets/book-11.jpg" 
+    price: 14.25,
+    image: Book11
   },
-  { 
-    title: "Dune", 
-    author: "Frank Herbert", 
+  {
+    title: "Dune",
+    author: "Frank Herbert",
     publication: "Chilton Books",
-    price: 16.99, 
-    image: "src/assets/book-2.jpg" 
+    price: 16.99,
+    image: Book12
   },
-  { 
-    title: "The Martian", 
-    author: "Andy Weir", 
+  {
+    title: "The Martian",
+    author: "Andy Weir",
     publication: "Crown Publishing Group",
-    price: 13.50, 
-    image: "src/assets/book-3.jpg" 
+    price: 13.50,
+    image: Book3
   },
-  { 
-    title: "Sapiens: A Brief History of Humankind", 
-    author: "Yuval Noah Harari", 
+  {
+    title: "Sapiens: A Brief History of Humankind",
+    author: "Yuval Noah Harari",
     publication: "Harper",
-    price: 17.99, 
-    image: "src/assets/book-4.jpg" 
+    price: 17.99,
+    image: Book4
   },
-  { 
-    title: "The Girl with the Dragon Tattoo", 
-    author: "Stieg Larsson", 
+  {
+    title: "The Girl with the Dragon Tattoo",
+    author: "Stieg Larsson",
     publication: "Norstedts Förlag",
-    price: 12.75, 
-    image: "src/assets/book-5.jpg" 
+    price: 12.75,
+    image: Book5
   }
 ];
 
