@@ -487,6 +487,7 @@ const SellerDashboard = () => {
             </Grid>
 
             <MostSellingBooks />
+            <Footer />
           </Box>
         </div>
       ) : (
@@ -581,7 +582,7 @@ const SellerDashboard = () => {
           </DialogActions>
         </Dialog>
       )}
-      <Footer />
+      
     </>
   );
 };

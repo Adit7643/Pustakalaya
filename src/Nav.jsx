@@ -146,7 +146,7 @@ const Navbar = () => {
           >
             <Box
               component="img"
-              src='src/assets/Colorful.png'
+              src='https://res.cloudinary.com/diqksjvxp/image/upload/v1732092849/gnijxzswsbupttwyetho.png'
               alt="Pustakalaya"
               sx={{
                 height: 40,
