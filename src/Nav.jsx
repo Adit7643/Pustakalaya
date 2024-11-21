@@ -70,7 +70,7 @@ const Navbar = () => {
     if (userEmail && isLoggedIn) {
       const cartRef = collection(db, 'user', userEmail, 'cart');
       const unsubscribe = onSnapshot(cartRef, (snapshot) => {
-        setCartItemCount(snapshot.docs.length-1);
+        setCartItemCount(snapshot.docs.length - 1);
       });
       return () => unsubscribe();
     } else {
@@ -86,7 +86,17 @@ const Navbar = () => {
   const handleCategoriesClose = () => {
     setAnchorElCategories(null);
   };
+  const handleCategorySelect = (category) => {
+    // Close the categories menu
+    handleCategoriesClose();
 
+    // Navigate to the books page with the selected category
+    navigate('/buy', {
+      state: {
+        selectedCategory: category
+      }
+    });
+  };
   const handleProfileClick = (event) => {
     if (!isLoggedIn) {
       setOpenLoginDialog(true);
@@ -116,9 +126,9 @@ const Navbar = () => {
         email: user.email,
         password: `google_${user.email}`,
       },
-    {
-    merge:true
-    });
+        {
+          merge: true
+        });
       localStorage.setItem('user', user.email);
       setIsLoggedIn(true);
       handleDialogClose();
@@ -144,7 +154,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
-    localStorage.removeItem('user'); 
+    localStorage.removeItem('user');
     setAnchorElProfile(null); // Close profile menu
     navigate('/');
   };
@@ -224,43 +234,43 @@ const Navbar = () => {
               }}
             >
               {/* List of categories with icons */}
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Literature & Fiction")}>
                 <ListItemIcon><MenuBook /></ListItemIcon>
                 <ListItemText primary="Literature & Fiction" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Science & Technology")}>
                 <ListItemIcon><Science /></ListItemIcon>
                 <ListItemText primary="Science & Technology" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("History & Geography")}>
                 <ListItemIcon><History /></ListItemIcon>
                 <ListItemText primary="History & Geography" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Computers & IT")}>
                 <ListItemIcon><Computer /></ListItemIcon>
                 <ListItemText primary="Computers & IT" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Educational")}>
                 <ListItemIcon><School /></ListItemIcon>
                 <ListItemText primary="Educational" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Arts & Crafts")}>
                 <ListItemIcon><Brush /></ListItemIcon>
                 <ListItemText primary="Arts & Crafts" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Sports")}>
                 <ListItemIcon><SportsSoccer /></ListItemIcon>
                 <ListItemText primary="Sports" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Children & Teen")}>
                 <ListItemIcon><ChildFriendly /></ListItemIcon>
                 <ListItemText primary="Children & Teen" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Psychology & Self-Help")}>
                 <ListItemIcon><Psychology /></ListItemIcon>
                 <ListItemText primary="Psychology & Self-Help" />
               </MenuItem>
-              <MenuItem onClick={handleCategoriesClose}>
+              <MenuItem onClick={() => handleCategorySelect("Law & Government")}>
                 <ListItemIcon><Gavel /></ListItemIcon>
                 <ListItemText primary="Law & Government" />
               </MenuItem>
@@ -378,7 +388,7 @@ const Navbar = () => {
           <Divider key="divider" />,
 
           // Menu Items
-          <MenuItem onClick={() => { /* Handle My Orders */ }} key="my-orders" component={Link}  to="/user_order">
+          <MenuItem onClick={() => { /* Handle My Orders */ }} key="my-orders" component={Link} to="/user_order">
             <ListItemIcon>
               <ShoppingCartIcon />
             </ListItemIcon>
