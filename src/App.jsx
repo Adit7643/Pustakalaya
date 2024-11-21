@@ -14,6 +14,7 @@ import Footer from "./Footer";
 import Profile from "./Profile";
 import Orders from "./Orders";
 import UserOrders from "./UserOrders";
+import Wishlist from "./WishList";
 
 const App = () => {
   const isUserLoggedIn = true; // Set this based on actual auth status
@@ -77,7 +78,16 @@ const App = () => {
           element={
             <>
               <Navbar />
-              <UserOrders/>
+              <UserOrders />
+            </>
+          }
+        />
+        <Route
+          path="/wish"
+          element={
+            <>
+              <Navbar />
+              <Wishlist />
             </>
           }
         />

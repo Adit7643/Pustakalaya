@@ -410,7 +410,7 @@ const Navbar = () => {
             <ListItemText primary="Saved Addresses" />
           </MenuItem>,
 
-          <MenuItem onClick={() => { /* Handle Wish List */ }} key="wish-list" component={Link} to="/profile">
+          <MenuItem onClick={() => { /* Handle Wish List */ }} key="wish-list" component={Link} to="/wish">
             <ListItemIcon>
               <FavoriteIcon />
             </ListItemIcon>
