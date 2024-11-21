@@ -6,6 +6,7 @@ import {
   AppBar, Toolbar, Typography, Button, Box, IconButton, InputBase, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tab, Tabs, ListItemIcon, ListItemText,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   AccountCircle,
@@ -49,7 +50,8 @@ const Navbar = () => {
   const [Password, setPassword] = useState("");
   const [Email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
-  const [cartItemCount, setCartItemCount] = useState(0)
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const navigate = useNavigate();
 
 
   const openCategories = Boolean(anchorElCategories);
@@ -113,7 +115,10 @@ const Navbar = () => {
         name: user.displayName,
         email: user.email,
         password: `google_${user.email}`,
-      });
+      },
+    {
+    merge:true
+    });
       localStorage.setItem('user', user.email);
       setIsLoggedIn(true);
       handleDialogClose();
@@ -139,8 +144,9 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
-    setIsLoggedIn(false);
+    localStorage.removeItem('user'); 
     setAnchorElProfile(null); // Close profile menu
+    navigate('/');
   };
 
   return (
