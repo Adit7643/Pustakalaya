@@ -68,7 +68,7 @@ const UserOrders = () => {
   }, []);
 
   const handleBack = () => {
-    navigate('/sell');
+    navigate('/');
   };
 
   const handleOpenDialog = (order) => {
